@@ -36,6 +36,11 @@ adm <- readRDS(file.path(spam_par$spam_path,
 
 
 ############### CREATE COUNTRY GRID ###############
-grid <- create_grid(spam_par$res, adm)
+grid <- create_grid(res = spam_par$res, border = adm, crs = spam_par$crs)
+plot(grid)
+
+
+############### SAVE ###############
+writeRaster(grid, file.path(spam$par, glue("processed_data/maps/grid/grid_{spam_par$year}_{spam_par$res}_{spam_par$iso3c}.tif"), overwrite = T))
 
 
