@@ -63,49 +63,36 @@ gia_temp <- align_rasters(unaligned = input, reference = grid, dstfile = output,
                           cutline = mask, crop_to_cutline = F, 
                           r = "near", verbose = F, output_Raster = T, overwrite = T)
   
-# Reclassify and calculate irrigated area
+# Reclassify
 gia_temp <- reclassify(gia_temp, cbind(1, 4, 1))
-
+names(gia_temp) <- "gia"
 
 if(param$res == "30sec") {
-
-  # Calculate irrigated area
-  gia_temp <- gia_temp*area(gia_temp)*100
-  names(gia_temp) <- "gia"
-  plot(gia_temp)
-  
   # Save
   writeRaster(gia_temp,
-              file.path(param$spam_path, glue("processed_data/maps/irrigated_area/gia_{param$res}_{param$year}_{param$iso3c}.tif")), overwrite = T)
+    file.path(param$spam_path,
+    glue("processed_data/maps/irrigated_area/gia_{param$res}_{param$year}_{param$iso3c}.tif")),
+    overwrite = T)
 }
 
 if(param$res == "5min"){
-  
   # Save temporary file with 1 for irrigated area
   writeRaster(gia_temp, file.path(param$spam_path,
                                   glue("processed_data/maps/irrigated_area/gia_temp_{param$year}_{param$iso3c}.tif")), overwrite = T)
   
   # Set files
   grid <- file.path(param$spam_path,
-                    glue("processed_data/maps/grid/grid_{param$res}_{param$year}_{param$iso3c}.tif"))
+    glue("processed_data/maps/grid/grid_{param$res}_{param$year}_{param$iso3c}.tif"))
   mask <- file.path(param$spam_path,
-                    glue("processed_data/maps/adm/adm_{param$year}_{param$iso3c}.shp"))
+    glue("processed_data/maps/adm/adm_{param$year}_{param$iso3c}.shp"))
   input <- file.path(param$spam_path, 
-                     glue("processed_data/maps/irrigated_area/gia_temp_{param$year}_{param$iso3c}.tif"))
+    glue("processed_data/maps/irrigated_area/gia_temp_{param$year}_{param$iso3c}.tif"))
   output <- file.path(param$spam_path,
-                      glue("processed_data/maps/irrigated_area/gia_{param$res}_{param$year}_{param$iso3c}.tif"))
+    glue("processed_data/maps/irrigated_area/gia_{param$res}_{param$year}_{param$iso3c}.tif"))
   
   # Warp and mask
   # Use average to calculate share of irrigated area
   gia_temp <- gdalwarp(srcfile = input, dstfile = output, cutline = mask, crop_to_cutline = F, 
                               r = "average", verbose = F, output_Raster = T, overwrite = T)
-  # Calculate irrigated area
-  gia_temp <- gia_temp*area(gia_temp)*100
-  names(gia_temp) <- "gia"
-  plot(gia_temp)
- 
-   # Overwrite warped file
-  writeRaster(gia_temp, file.path(param$spam_path,
-                                   glue("processed_data/maps/irrigated_area/gia_{param$res}_{param$year}_{param$iso3c}.tif")), overwrite = T)
 }
 

@@ -26,20 +26,44 @@ options(digits=4) # limit display to four digits
 
 
 ############### PROCESS ###############
-# Set files
+# Worldpop presents population density per #grid cell (in this case 30 arcsec,
+# the resolution of the map). 
+# In order to use the map at higher resolutions (e.g. 5 arcmin) we need to resample using
+# the average option and multiple by 100, the number of 30sec grid cells in 5 arcmin.
+
 grid <- file.path(param$spam_path,
                   glue("processed_data/maps/grid/grid_{param$res}_{param$year}_{param$iso3c}.tif"))
 mask <- file.path(param$spam_path,
                   glue("processed_data/maps/adm/adm_{param$year}_{param$iso3c}.shp"))
 input <- file.path(param$raw_path, "worldpop/ppp_2010_1km_Aggregated.tif")
 output <- file.path(param$spam_path,
-                    glue("processed_data/maps/accessibility/accessibility_{param$res}_{param$year}_{param$iso3c}.tif"))
+                    glue("processed_data/maps/population/population_{param$res}_{param$year}_{param$iso3c}.tif"))
 
-# Warp and mask
-output_map <- align_rasters(unaligned = input, reference = grid, dstfile = output,
+if(param$res == "30sec") {
+  
+  # Warp and mask
+  output_map <- align_rasters(unaligned = input, reference = grid, dstfile = output,
                    cutline = mask, crop_to_cutline = F, 
-                   r = "bilinear", verbose = F, output_Raster = T, overwrite = T)
-plot(output_map)
+                   r = "bilinear", verbose = T, output_Raster = T, overwrite = T)
+  plot(output_map)
+}
+
+if(param$res == "5min") {
+  
+  # Warp and mask
+  worldpop_temp <- align_rasters(unaligned = input, reference = grid, dstfile = output,
+                              cutline = mask, crop_to_cutline = F, 
+                              r = "average", verbose = T, output_Raster = T, overwrite = T)
+  
+  # Multiple average population with 100
+  worldpop_temp <- worldpop_temp*100
+  plot(worldpop_temp)
+  
+  # Overwrite
+  writeRaster(worldpop_temp, file.path(param$spam_path,
+    glue("processed_data/maps/population/population_{param$res}_{param$year}_{param$iso3c}.tif")), 
+    overwrite = T)
+}
 
 
 ############### CLEAN UP ###############
