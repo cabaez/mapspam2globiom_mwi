@@ -52,6 +52,7 @@ if(param$res == "5min") {
   gmia_temp <- crop(gmia_raw, adm)
   gmia_temp <- mask(gmia_temp, adm)
   names(gmia_temp) <- "gmia"
+  plot(gmia_temp)
   writeRaster(gmia_temp, file.path(param$spam_path, 
                glue("processed_data/maps/irrigated_area/gmia_{param$res}_{param$year}_{param$iso3c}.tif")), overwrite = T)
 }
