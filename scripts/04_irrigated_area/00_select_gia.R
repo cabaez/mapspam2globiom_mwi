@@ -1,0 +1,111 @@
+#'========================================================================================================================================
+#' Project:  mapspam
+#' Subject:  Code to process GIA
+#' Author:   Michiel van Dijk
+#' Contact:  michiel.vandijk@wur.nl
+#'========================================================================================================================================
+
+############### MESSAGE ###############
+message("\nRunning 03_spatial_data\\02_select_gia.r")
+
+
+############### SET UP ###############
+# Install and load pacman package that automatically installs R packages if not available
+if("pacman" %in% rownames(installed.packages()) == FALSE) install.packages("pacman")
+library(pacman)
+
+# Load key packages
+p_load("tidyverse", "readxl", "stringr", "here", "scales", "glue", "gdalUtils", "raster", "sf")
+
+# Set root
+root <- here()
+
+# R options
+options(scipen=999) # Supress scientific notation
+options(digits=4) # limit display to four digits
+
+
+############### LOAD DATA ###############
+# Adm
+adm <- readRDS(file.path(param$spam_path,
+                         glue("processed_data/maps/adm/adm_{param$year}_{param$iso3c}.rds")))
+
+# Raw gia file
+gia_raw <- raster(file.path(param$raw_path, "gia/global_irrigated_areas.tif"))
+
+
+############### PROCESS ###############
+# The crs of the gia (WGS 84) is missing for some reason. We add and save the map
+crs(gia_raw) <- "+proj=longlat +datum=WGS84 +no_defs"
+if(!file.exists(file.path(param$raw_path, "gia/global_irrigated_areas_crs.tif"))){
+  writeRaster(gia_raw, file.path(param$raw_path, "gia/global_irrigated_areas_crs.tif"), overwrite = T)
+}
+
+# Gia assumes full 30sec (the resolution of the map) are irrigated and uses a categorical
+# variable (1-4) to indicate irrigated areas (see README.txt).
+# In order to use the map at higher resolutions (e.g. 5 arcmin) we need to reclassify these into 
+# 1 (100%) and use gdalwarp with "average" to calculate the share of irrigated area at larger grid cells.
+# If res is 30sec, we can clip the raw map and reclassify c(1:4) values to 1.
+
+# Set files
+grid <- file.path(param$spam_path,
+                  glue("processed_data/maps/grid/grid_{param$res}_{param$year}_{param$iso3c}.tif"))
+mask <- file.path(param$spam_path,
+                  glue("processed_data/maps/adm/adm_{param$year}_{param$iso3c}.shp"))
+input <- file.path(param$raw_path, "gia/global_irrigated_areas_crs.tif")
+output <- file.path(param$raw_path,
+                    glue("gia/gia_temp_{param$year}_{param$iso3c}.tif"))
+  
+# Clip to adm
+# Warp and mask
+# Use r = "near" for categorical values.
+gia_temp <- align_rasters(unaligned = input, reference = grid, dstfile = output,
+                          cutline = mask, crop_to_cutline = F, 
+                          r = "near", verbose = F, output_Raster = T, overwrite = T)
+  
+# Reclassify and calculate irrigated area
+gia_temp <- reclassify(gia_temp, cbind(1, 4, 1))
+
+
+if(param$res == "30sec") {
+
+  # Calculate irrigated area
+  gia_temp <- gia_temp*area(gia_temp)*100
+  names(gia_temp) <- "gia"
+  plot(gia_temp)
+  
+  # Save
+  writeRaster(gia_temp,
+              file.path(param$spam_path, glue("processed_data/maps/irrigated_area/gia_{param$res}_{param$year}_{param$iso3c}.tif")), overwrite = T)
+}
+
+if(param$res == "5min"){
+  
+  # Save temporary file with 1 for irrigated area
+  writeRaster(gia_temp, file.path(param$spam_path,
+                                  glue("processed_data/maps/irrigated_area/gia_temp_{param$year}_{param$iso3c}.tif")), overwrite = T)
+  
+  # Set files
+  grid <- file.path(param$spam_path,
+                    glue("processed_data/maps/grid/grid_{param$res}_{param$year}_{param$iso3c}.tif"))
+  mask <- file.path(param$spam_path,
+                    glue("processed_data/maps/adm/adm_{param$year}_{param$iso3c}.shp"))
+  input <- file.path(param$spam_path, 
+                     glue("processed_data/maps/irrigated_area/gia_temp_{param$year}_{param$iso3c}.tif"))
+  output <- file.path(param$spam_path,
+                      glue("processed_data/maps/irrigated_area/gia_{param$res}_{param$year}_{param$iso3c}.tif"))
+  
+  # Warp and mask
+  # Use average to calculate share of irrigated area
+  gia_temp <- gdalwarp(srcfile = input, dstfile = output, cutline = mask, crop_to_cutline = F, 
+                              r = "average", verbose = F, output_Raster = T, overwrite = T)
+  # Calculate irrigated area
+  gia_temp <- gia_temp*area(gia_temp)*100
+  names(gia_temp) <- "gia"
+  plot(gia_temp)
+ 
+   # Overwrite warped file
+  writeRaster(gia_temp, file.path(param$spam_path,
+                                   glue("processed_data/maps/irrigated_area/gia_{param$res}_{param$year}_{param$iso3c}.tif")), overwrite = T)
+}
+

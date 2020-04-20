@@ -1,12 +1,12 @@
 #'========================================================================================================================================
 #' Project:  mapspam
-#' Subject:  Code to create mapspam grid
+#' Subject:  Code to process urban extent maps
 #' Author:   Michiel van Dijk
 #' Contact:  michiel.vandijk@wur.nl
 #'========================================================================================================================================
 
 ############### MESSAGE ###############
-message("\nRunning 02_grid_and_adm\\01_create_grid.r")
+message("\nRunning 03_spatial_data\\07_select_urban_extent.r")
 
 
 ############### SET UP ###############
@@ -15,7 +15,7 @@ if("pacman" %in% rownames(installed.packages()) == FALSE) install.packages("pacm
 library(pacman)
 
 # Load key packages
-p_load("mapspam2globiom", "tidyverse", "readxl", "stringr", "here", "scales", "glue", "raster")
+p_load("mapspam2globiom", "tidyverse", "readxl", "stringr", "here", "scales", "glue", "gdalUtils", "sf", "raster")
 
 # Set root
 root <- here()
@@ -30,14 +30,24 @@ options(digits=4) # limit display to four digits
 adm <- readRDS(file.path(param$spam_path,
                          glue("processed_data/maps/adm/adm_{param$year}_{param$iso3c}.rds")))
 
+# urban extent, select country
+grump_raw <- read_sf(file.path(param$raw_path, "grump/global_urban_extent_polygons_v1.01.shp"))
 
-############### CREATE COUNTRY GRID ###############
-grid <- create_grid(border = adm, param = param)
-plot(grid)
+
+############### PROCESS ###############
+grump <- grump_raw %>%
+  filter(ISO3 == param$iso3c)
+plot(adm$geometry)
+plot(grump$geometry, col = "red", add = T)
 
 
 ############### SAVE ###############
-writeRaster(grid, file.path(param$spam_path, 
-                            glue("processed_data/maps/grid/grid_{param$res}_{param$year}_{param$iso3c}.tif")),
-  overwrite = T)
+saveRDS(grump, file.path(param$spam_path, glue("processed_data/maps/population/urban_extent_{param$year}_{param$iso3c}.rds")))
 
+
+############### CLEAN UP ###############
+rm(temp_path, adm, grump, grump_raw)
+
+
+############### MESSAGE ###############
+message("Complete")

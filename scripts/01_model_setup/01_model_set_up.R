@@ -30,17 +30,17 @@ spamc_path <- "C:/Users/dijk158/Dropbox/mapspam2globiom_mwi"
 create_spam_folders(spamc_path)
 
 # Set SPAMc parameters
-spam_par <- set_spam_par(spam_path = spamc_path,
- iso3c = "MWI",
- year = 2010,
- grid = "5min",
- adm_level = 1,
- solve_level = 0,
- model = "max_score")
+param <- spam_par(spam_path = spamc_path,
+                         iso3c = "MWI",
+                         year = 2010,
+                         res = "5min",
+                         adm_level = 2,
+                         solve_level = 0,
+                         model = "max_score")
 
 # Show parameters
-print(spam_par)
+print(param)
 
 # Save 
-saveRDS(spam_par, file.path(spam_par$spam_path, "parameters/spam_par.rds"))
+saveRDS(param, file.path(param$spam_path, "parameters/spam_par.rds"))
 

@@ -1,0 +1,82 @@
+---
+title: "Notes"
+author: "Michiel van Dijk"
+date: "03/04/2020"
+output: html_document
+---
+
+- check where to store all the mappings files. On the one hand we should store the in the package on the other hand we should provide a way to update them.
+- check where AQUASTAT and FAOSTAT version. Probably best is in setup file. Add and if statement to indicate when this is forgotten. 
+- Create mapping of gaez when maps are missing!
+- clean up crop mapping GAEZ
+- Need to develop one cliping function using gdal that does the major lifting!. Should be applied to all maps incl gaez. This means we can remove the creation of a 5min grid in grid.r
+- Remove -9999 values from tt maps!!!
+- select gaez needs to be cleaned up
+- Go through spatial data coded and add consistent functions from mapspam_functions.r
+- Add warnings when user input in set_grid... and 01_process_adm are not set! Check if names and codes are unique?
+- create flow chart that connects all the scripts - see MAGNET example that Lindsay created once.
+- check https://github.com/JGCRI/metis/tree/master/R for ideas. Only installs packages if they are not already installed...
+- Reorganize GAEZ raw data folders. Better to use two folders: suitability and potential_yield. Possible add more crops. 
+- Combine clip and reproject for GAEZ. DO we need the raw files for something. 
+- when package is finished remove source functions and add mapspam in all library calls. 
+- Make sure the model runs when no ADM data is available and only FAOSTAT is used. THis means that 03_process_subnational_statistics.R should be wrapped in an if statement that gives a warning that the file does not need to be created. Also the harmonization script should have an if statement. 
+- Do we want to include the option of scaling to FAOSTAT?
+- Is it really necessary that an ADM2 model also has ADM1 level data in the shapefile?? CHECK
+- Need to have a file with full adm mapping that connects adm to lower adms. 
+- Write all pdf reports to one folder "reports", e.g for adm maps, plots to compare stats etc. 
+- use temp_path when saving to temp path as this makes it possible to quickly changes names of folders without changing too much code.
+- CHeck that there are no duplicate names in adm_name
+- check if GAEZ uses -999 or something to indicate NA values. If so delete at forehand. 
+- Run system through for ADM1 optimization
+- check what to do with the check_na in 01_prepare_gaez.r
+- Add check after creation of each pre-gdx file to see if there are no NAs and no negative values.
+- Add rounding and rebalancing upwards before creation final pa file.
+- Check model input script needs to be reworked.
+- Create script/functions to write grid, year etc to csv file, which then is loaded before scripts are run.
+- Create function to set folders and (2) function to create all subfolders.. This will automatically create all folders and subfolders, after which all temp folders scripts can be deleted.
+- check creation of artificial units. case adm_sel = 1 and solve_sel = 1 not covered. Also compare code with code used for selecting pa and pa_fs, which might be applied and is more efficient.
+- add trycatch when running gams to catch errors
+- CHECK: SPAM uses additional constraint on artificial adms, for which no slack is allowed => implement!
+- Add check if there are NAs in score! THis often causes problems.
+- Related: what will happen if all suit is zero at an ADM1 level when the model is run at ADM1. Need to investigate this.
+- If 5 arcmin input such as GMIA and GAEZ are first clipped and then reprojected to 30 arcsec, many border cells will be lost because the clip will only include grid cells of which the center is included. Not clear if gdalwarp first clips or first warps. CHECK. For GMAI, we need to change the process, when creating 30arcsec maps, perhap cropping at res+2 grid cells to ensure all grid cells are included. 
+
+# To do
+update 04_synergy_cropland for now using SASAM product
+compare_processed statistics
+compare raw statistics
+remove cl maps and df in harmonization file when they are redundant to save memory space
+# Still to do 
+
+# Process raw subnational statistics file.
+
+Code to rebalance ADM totals does not account for cases when, say, all ADM2 units for maize have a value except for one (or more) and the sum of the ADMs where values are not NA are nearly the same as the total of ADM2 but not identical due to rounding. In these cases ADM1 will not be updated as there are missing values. The result is that when the artificial ADMs are constructed the artificial ADM that represents all maize will have a very small value which creates problems in GAMS. Write a function to checks for these cases and presents a warning. Perhaps introduce a threshold. If |sum(ADM2)-ADM1| < 10 Replace and set missing ADM2 to 0. 
+
+Wrap rebalancing code in function. 
+
+Balancing code is not correct as it does not replace, say ADM1 when there is missing information at ADM2. This is ONLY correct if ADM1 > sum(ADM2). If not there is an inconsistency. In previous code. We also had an extra rule: 
+
+Also replace cases when sum(ADM2) > ADM1 and is.na(ADM2)
+Set is.na(ADM2) to 0. 
+
+# Introduce class subnat stat?!
+# Perhaps introduce a class subnat_stat, which always consists of subnatstat in wide format.
+# And has passed a number of checks so it is always consistent. 
+
+# Scaling to FAOSTAT. 
+We do not scale if there are missing values and sum(ADM1)<faostat. Here the same rule should be applied. If the sum is very close to FAOSTAT, missing values should be set to 0. 
+
+# Compare adm
+Build check function that compares adm_map_list, which should be leading, with adm stat
+
+# Farming systems
+Add in 02_agricultural statistics a script that creates overview of export shares of crops to determine system. Also add script that creates template for setting shares. Including pre-processing share of irrigated. 
+
+# Running at ADM0
+Need to start at beginning and add code to make this work, for example in Combine statistics. Best is to use MWI as test case and split into three parts, one for each ADM1.
+
+# Irrigated area
+unclear how to deal with resolution higher than 30arcsec. At the moment gia is the preferred map but if we warp this to 30 arcsec. share of irrigated area will be very low so unclear how ranking will result. 
+Also in case there is not ir area (CL > IR) SPAM uses the rule that CL = IR), which can be implemented at 5min arcsec but probably not at 30 arcsec
+
+Maybe have to use same rule as used for gia to run GMIA as it it might be that warping a 5min map to 5min changes the results. 

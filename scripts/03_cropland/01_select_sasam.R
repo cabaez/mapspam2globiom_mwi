@@ -10,13 +10,9 @@ message("\nRunning 03_spatial_data\\01_select_sasam_adm.r")
 
 
 ############### SET UP ###############
-# Load pacman for p_load
-if(!require(pacman)){
-  install.packages("pacman")
-  library(pacman) 
-} else {
-  library(pacman)
-}
+# Install and load pacman package that automatically installs R packages if not available
+if("pacman" %in% rownames(installed.packages()) == FALSE) install.packages("pacman")
+library(pacman)
 
 # Load key packages
 p_load("mapspam2globiom", "tidyverse", "readxl", "stringr", "here", "scales", "glue", "gdalUtils", "sf", "raster")
@@ -29,72 +25,81 @@ options(scipen=999) # Supress scientific notation
 options(digits=4) # limit display to four digits
 
 
-### SOURCE FUNCTIONS
-# TO_UPDATE
-source(file.path(root, "Code/general/mapspam_functions.r"))
-
-
 ############### PROCESS CROPRATIO (MEDIAN AREA) ###############
 # Set files
-input <- file.path(spam_par$spam_path, glue("raw_data/sasam/{spam_par$continent}/cropland_ratio_{spam_par$continent}.tif"))
-mask <- file.path(spam_par$spam_path, glue("processed_data/maps/adm/adm_{spam_par$year}_{spam_par$iso3c}.shp"))
-output <- file.path(spam_par$spam_path, glue("processed_data/maps/cropland_med_share_{spam_par$grid}_{spam_par$year}_{spam_par$iso3c}.tif"))
-ref_grid <- file.path(spam_par$spam_path, glue("processed_data/maps/grid/grid_{spam_par$grid}_r_{spam_par$year}_{spam_par$iso3c}.tif"))
+grid <- file.path(param$spam_path,
+                  glue("processed_data/maps/grid/grid_{param$res}_{param$year}_{param$iso3c}.tif"))
+mask <- file.path(param$spam_path,
+                  glue("processed_data/maps/adm/adm_{param$year}_{param$iso3c}.shp"))
+input <- file.path(param$spam_path,
+                   glue("raw_data/sasam/{param$continent}/cropland_ratio_{param$continent}.tif"))
+output <- file.path(param$spam_path,
+                    glue("processed_data/maps/cropland/cropland_med_share_{param$res}_{param$year}_{param$iso3c}.tif"))
 
 # Warp and mask
-align_cut_raster(srcfile, reference, dstfile, cutline, crop_to_cutline = F,
-                 r = "bilinear", verbose = F, output_Raster = F)
-
-output_map <- align_rasters(unaligned = input, reference = ref_grid, dstfile = ouput,
+output_map <- align_rasters(unaligned = input, reference = grid, dstfile = output,
                             cutline = mask, crop_to_cutline = F,
-                            r = "bilinear", verbose = T, output_Raster = T, overwrite = T)
+                            r = "bilinear", verbose = F, output_Raster = T, overwrite = T)
 
 # Maps are in shares of area. We multiply by grid size to create an area map.
-r <- raster(dstfile)
-a <- area(r)
-r_upd <- r*a*100
-writeRaster(r_upd, file.path(temp_path, glue("cropland_med_{grid_sel}_{year_sel}_{iso3c_sel}.tif")),
-            overwrite = T)
+a <- area(output_map)
+output_map <- output_map * a * 100
+plot(output_map)
+writeRaster(output_map, file.path(param$spam_path,
+  glue("processed_data/maps/cropland/cropland_med_{param$res}_{param$year}_{param$iso3c}.tif")),overwrite = T)
 
 # clean up
-rm(srcfile, cutline, dstfile, reference, r, a, r_upd)
+rm(grid, input, mask, output, output_map)
 
 
 ############## PROCESS CROPMAX (MAXIMUM AREA) ###############
 # Set files
-srcfile <- file.path(glob_raw_path, glue("sasam/{continent_sel}/cropland_max_{continent_sel}.tif"))
-cutline <- file.path(proc_path, glue("maps/adm/adm_{year_sel}_{iso3c_sel}.shp"))
-dstfile <- file.path(temp_path, glue("cropland_max_share_{grid_sel}_{year_sel}_{iso3c_sel}.tif"))
-reference <- file.path(proc_path, glue("maps/grid/grid_{grid_sel}_r_{year_sel}_{iso3c_sel}.tif"))
+grid <- file.path(param$spam_path,
+                  glue("processed_data/maps/grid/grid_{param$res}_{param$year}_{param$iso3c}.tif"))
+mask <- file.path(param$spam_path,
+                  glue("processed_data/maps/adm/adm_{param$year}_{param$iso3c}.shp"))
+input <- file.path(param$spam_path,
+                   glue("raw_data/sasam/{param$continent}/cropland_max_{param$continent}.tif"))
+output <- file.path(param$spam_path,
+                    glue("processed_data/maps/cropland/cropland_max_share_{param$res}_{param$year}_{param$iso3c}.tif"))
 
 # warp and mask
-align_cut_raster(srcfile, reference, dstfile, cutline, crop_to_cutline = F,
-                 r = "bilinear", verbose = F, output_Raster = F)
+output_map <- align_rasters(unaligned = input, reference = grid, dstfile = output,
+                            cutline = mask, crop_to_cutline = F,
+                            r = "bilinear", verbose = F, output_Raster = T, overwrite = T)
 
-# Maps are in shares of area. We multiply by grid size to create an area map and overwrite shares map.
-r <- raster(dstfile)
-a <- area(r)
-r_upd <- r*a*100
-writeRaster(r_upd, file.path(temp_path, glue("cropland_max_{grid_sel}_{year_sel}_{iso3c_sel}.tif")), overwrite = T)
+# Maps are in shares of area. We multiply by grid size to create an area map.
+a <- area(output_map)
+output_map <- output_map * a * 100
+plot(output_map)
+writeRaster(output_map, file.path(param$spam_path,
+                             glue("processed_data/maps/cropland/cropland_max_{param$res}_{param$year}_{param$iso3c}.tif")),overwrite = T)
 
 # clean up
-rm(srcfile, cutline, dstfile, reference, r, a, r_upd)
+rm(a, grid, input, mask, output, output_map)
 
 
 ############### PROCESS CROPPROB (PROBABILITY, 1 IS HIGHEST) ###############
 # Set files
-srcfile <- file.path(glob_raw_path, glue("sasam/{continent_sel}/cropland_confidence_level_{continent_sel}.tif"))
-cutline <- file.path(proc_path, glue("maps/adm/adm_{year_sel}_{iso3c_sel}.shp"))
-dstfile <- file.path(temp_path, glue("cropland_rank_{grid_sel}_{year_sel}_{iso3c_sel}.tif"))
-reference <- file.path(proc_path, glue("maps/grid/grid_{grid_sel}_r_{year_sel}_{iso3c_sel}.tif"))
+grid <- file.path(param$spam_path,
+                      glue("processed_data/maps/grid/grid_{param$res}_{param$year}_{param$iso3c}.tif"))
+mask <- file.path(param$spam_path,
+                  glue("processed_data/maps/adm/adm_{param$year}_{param$iso3c}.shp"))
+input <- file.path(param$spam_path,
+                   glue("raw_data/sasam/{param$continent}/cropland_confidence_level_{param$continent}.tif"))
+output <- file.path(param$spam_path,
+                    glue("processed_data/maps/cropland/cropland_rank_{param$res}_{param$year}_{param$iso3c}.tif"))
 
 # warp and mask
-# Use r = "med" to select the median probability as probability is a categorical variable (1-32)
-align_cut_rm_raster(srcfile, reference, dstfile, cutline, crop_to_cutline = F,
-                    r = "med", verbose = F, output_Raster = F, srcnodata = "0")
+# Use r = "med" to select the median probability as probability is a categorical variable (1-32).
+# Remove 0 values (no cropland) before processing as they will bias taking the medium value.
+output_map <- align_rasters(unaligned = input, reference = grid, dstfile = output,
+                            cutline = mask, crop_to_cutline = F, srcnodata = "0",
+                            r = "med", verbose = F, output_Raster = T, overwrite = T)
+plot(output_map)
 
 # clean up
-rm(temp_path, srcfile, reference, dstfile, cutline)
+rm(grid, input, mask, output, output_map)
 
 
 ############### MESSAGE ###############

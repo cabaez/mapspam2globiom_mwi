@@ -10,16 +10,14 @@ message("\nRunning 02_grid_and_adm\\02_rasterize_adm.r")
 
 
 ############### SET UP ###############
-# Load pacman for p_load
-if(!require(pacman)){
-  install.packages("pacman")
-  library(pacman) 
-} else {
-  library(pacman)
-}
+# Install and load pacman package that automatically installs R packages if not available
+if("pacman" %in% rownames(installed.packages()) == FALSE) install.packages("pacman")
+library(pacman)
+
 
 # Load key packages
-p_load("mapspam2globiom", "tidyverse", "readxl", "stringr", "here", "scales", "glue", "sf", "gdalUtilities")
+p_load("mapspam2globiom", "tidyverse", "readxl", "stringr", "here", "scales", "glue",
+       "sf", "gdalUtilities")
 
 # Set root
 root <- here()
@@ -31,29 +29,31 @@ options(digits=4) # limit display to four digits
 
 ############### LOAD DATA ###############
 # Adm
-adm <- readRDS(file.path(spam_par$spam_path,
-  glue("processed_data/maps/adm/adm_{spam_par$year}_{spam_par$iso3c}.rds")))
+adm <- readRDS(file.path(param$spam_path,
+  glue("processed_data/maps/adm/adm_{param$year}_{param$iso3c}.rds")))
 
 # Grid
-grid <- raster(file.path(spam_par$spam_path,
- glue("processed_data/maps/grid/grid_{spam_par$res}_r_{spam_par$year}_{spam_par$iso3c}.tif")))
+grid <- raster(file.path(param$spam_path,
+ glue("processed_data/maps/grid/grid_{param$res}_{param$year}_{param$iso3c}.tif")))
 names(grid) <- "gridID"
   
 
 ############### CREATE RASTER OF ADMS WITH GRIDID ###############
 # Rasterize adm
-adm_r <- rasterize(adm, grid)
+# getCover ensures all grid cells covered are rasterized, not only where the center is covered by the polyon.
+# Otherwise grid cells might get lost.
+adm_r <- rasterize(adm, grid, getCover=TRUE)
 names(adm_r) <- "ID"
 plot(adm_r)
 
 # Get adm info
-if(adm_sel == 0){
+if(param$adm_level == 0){
   adm_df <- levels(adm_r)[[1]] %>%
     transmute(ID, adm0_name, adm0_code)
-} else if(adm_sel == 1){
+} else if(param$adm_level){
   adm_df <- levels(adm_r)[[1]] %>%
     transmute(ID, adm0_name, adm0_code, adm1_name, adm1_code)
-} else if(adm_sel == 2){
+} else if(param$adm_level){
   adm_df <- levels(adm_r)[[1]] %>%
     transmute(ID, adm0_name, adm0_code, adm1_name, adm1_code, adm2_name, adm2_code)
 }
@@ -70,11 +70,12 @@ adm_r <- as.data.frame(rasterToPoints(adm_r)) %>%
 
 ############### SAVE ###############
 # Save
-saveRDS(adm_r, file.path(proc_path, glue("maps/adm/adm_r_{grid_sel}_{year_sel}_{iso3c_sel}.rds")))
+saveRDS(adm_r, file.path(param$spam_path,
+  glue("processed_data/maps/adm/adm_r_{param$res}_{param$year}_{param$iso3c}.rds")))
 
 
 ############### CLEAN UP ###############
-rm(adm, grid, adm_r, adm_df)
+rm(adm, grid, adm_r)
 
 
 ############### MESSAGE ###############
