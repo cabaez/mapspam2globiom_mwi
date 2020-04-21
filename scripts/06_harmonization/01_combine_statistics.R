@@ -22,21 +22,7 @@ options(digits=4)
 
 
 ############### LOAD DATA ###############
-# Adm list
-adm_list <- read_csv(file.path(param$spam_path, 
-                               glue("processed_data/lists/adm_list_{param$year}_{param$iso3c}.csv")))
-
-# Harvested area
-ha <- read_csv(file.path(param$spam_path, 
-                         glue("processed_data/agricultural_statistics/ha_adm_{param$year}_{param$iso3c}.csv")))
-
-# Farming system shares
-fs <- read_csv(file.path(param$raw_path,
-                         glue("subnational_statistics/farming_system_shares_{param$year}_{param$iso3c}.csv")))
-
-# Cropping intensity
-ci <- read_csv(file.path(param$raw_path,
-                         glue("subnational_statistics/cropping_intensity_{param$year}_{param$iso3c}.csv")))
+load_input(c("adm_list", "ha", "fs", "ci"), param)
 
 
 ############### PROCESS HARVESTED AREA ###############

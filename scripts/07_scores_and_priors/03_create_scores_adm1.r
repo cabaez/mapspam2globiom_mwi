@@ -32,7 +32,7 @@ source(file.path(root, "Code/general/mapspam_functions.r"))
 
 ############### SET ADM IN LINE WITH SOLVE_SEL ###############
 # Adm list
-adm_list <- read_csv(file.path(proc_path, glue("lists/adm_map_list_{year_sel}_{iso3c_sel}.csv")))
+adm_list <- read_csv(file.path(proc_path, glue("lists/adm_list_{year_sel}_{iso3c_sel}.csv")))
 
 if(solve_sel == 0) {
   adm_code_list <- unique(adm_list$adm0_code)

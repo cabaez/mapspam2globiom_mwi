@@ -87,3 +87,7 @@ unclear how to deal with resolution higher than 30arcsec. At the moment gia is t
 Also in case there is not ir area (CL > IR) SPAM uses the rule that CL = IR), which can be implemented at 5min arcsec but probably not at 30 arcsec
 
 Maybe have to use same rule as used for gia to run GMIA as it it might be that warping a 5min map to 5min changes the results. 
+
+# Load_inputs funtion
+Should read file list from an internal file with names, not hardcode. 
+Perhaps also create function that loads data as there is a lot of repetition.

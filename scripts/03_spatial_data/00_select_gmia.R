@@ -15,7 +15,7 @@ if("pacman" %in% rownames(installed.packages()) == FALSE) install.packages("pacm
 library(pacman)
 
 # Load key packages
-p_load("tidyverse", "readxl", "stringr", "here", "scales", "glue", "gdalUtils", "raster", "sf")
+p_load("mapspam2globiom", "tidyverse", "readxl", "stringr", "here", "scales", "glue", "gdalUtils", "raster", "sf")
 
 # Set root
 root <- here()
@@ -26,9 +26,7 @@ options(digits=4) # limit display to four digits
 
 
 ############### LOAD DATA ###############
-# Adm location
-adm_loc <- readRDS(file.path(param$spam_path,
-                         glue("processed_data/maps/adm/adm_loc_{param$year}_{param$iso3c}.rds")))
+load_data(c("adm_map"), param)
 
 # Raw gmia file
 gmia_raw <- raster(file.path(param$raw_path,"gmia/gmia_v5_aei_ha.asc"))
@@ -48,21 +46,49 @@ if(!file.exists(file.path(param$raw_path, "gmia/gmia_v5_aei_ha_crs.tif"))){
 # In case the resolution is 5 arcmin, we only clip the map to the country borders
 
 if(param$res == "5min") {
+  # Set files
+  mask <- file.path(param$spam_path,
+                    glue("processed_data/maps/adm/adm_map_wsg_84_{param$year}_{param$iso3c}.shp"))
+  input <- file.path(param$raw_path,
+                     glue("gmia/gmia_v5_aei_ha_crs.tif"))
+  output <- file.path(param$spam_path,
+                      glue("processed_data/maps/irrigated_area/gmia_temp_{param$res}_{param$year}_{param$iso3c}.tif"))
   
-  # Crop and mask to country borders
-  gmia_temp <- crop(gmia_raw, adm_loc)
-  gmia_temp <- mask(gmia_temp, adm_loc)
+  # Warp and mask
+  # Use crop to cutline to crop.
+  # TODO probably does not work at 30sec!!
+  gmia_temp <- gdalUtils::gdalwarp(srcfile = input, dstfile = output,
+                                  cutline = mask, crop_to_cutline = T, 
+                                  r = "bilinear", verbose = F, output_Raster = T, overwrite = T)
   names(gmia_temp) <- "gmia"
   
   # Calculate share of irrigated area
   gmia_temp <- gmia_temp/(area(gmia_temp)*100)
   plot(gmia_temp)
   
-  # save
-  writeRaster(gmia_temp, file.path(param$spam_path, 
-  glue("processed_data/maps/irrigated_area/gmia_{param$res}_{param$year}_{param$iso3c}.tif")),
+  # overwrite
+  writeRaster(gmia_temp, file.path(param$spam_path,
+                                   glue("processed_data/maps/irrigated_area/gmia_temp_{param$res}_{param$year}_{param$iso3c}.tif"))
+              ,
   overwrite = T)
-}
+
+  # Warp and mask to model resolution
+  # Set files
+  grid <- file.path(param$spam_path,
+                    glue("processed_data/maps/grid/grid_{param$res}_{param$year}_{param$iso3c}.tif"))
+  mask <- file.path(param$spam_path,
+                    glue("processed_data/maps/adm/adm_map_{param$year}_{param$iso3c}.shp"))
+  input <- file.path(param$spam_path,
+                     glue("processed_data/maps/irrigated_area/gmia_temp_{param$res}_{param$year}_{param$iso3c}.tif"))
+  output <- file.path(param$spam_path,
+                      glue("processed_data/maps/irrigated_area/gmia_{param$res}_{param$year}_{param$iso3c}.tif"))
+  
+  # Warp and mask
+  output_map <- align_rasters(unaligned = input, reference = grid, dstfile = output,
+                              cutline = mask, crop_to_cutline = F, 
+                              r = "bilinear", verbose = F, output_Raster = T, overwrite = T)
+  plot(output_map)
+  }
 
 if(param$res == "30sec") {
   # Crop, making sure it also includes grid cells, which center is outside the polygon

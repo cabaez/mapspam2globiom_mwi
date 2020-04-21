@@ -26,20 +26,20 @@ options(digits=4) # limit display to four digits
 iso3c_shp <- "adm_2010_MWI.shp"
 
 # load shapefile
-adm_loc_raw <- read_sf(file.path(param$spam_path, glue("raw_data/adm/{iso3c_shp}")))
+adm_map_raw <- read_sf(file.path(param$spam_path, glue("raw_data/adm/{iso3c_shp}")))
 
 # plot
-plot(adm_loc_raw$geometry)
+plot(adm_map_raw$geometry)
 
 
 ############### PROCESS ###############
 # Project to standard global projection
-adm_loc <- adm_loc_raw %>%
+adm_map <- adm_map_raw %>%
   st_transform(param$crs)
 
 # Check names
-head(adm_loc)
-names(adm_loc)
+head(adm_map)
+names(adm_map)
 
 # Change names In order to use the country polygon as input, the column names of
 # the attribute table have to be set. 
@@ -56,23 +56,23 @@ adm2_name_orig <- "ADM2_NAME"
 adm2_code_orig <- "FIPS2"
 
 # Replace the names
-names(adm_loc)[names(adm_loc) == adm0_name_orig] <- "adm0_name"
-names(adm_loc)[names(adm_loc) == adm0_code_orig] <- "adm0_code"
-names(adm_loc)[names(adm_loc) == adm1_name_orig] <- "adm1_name"
-names(adm_loc)[names(adm_loc) == adm1_code_orig] <- "adm1_code"
-names(adm_loc)[names(adm_loc) == adm2_name_orig] <- "adm2_name"
-names(adm_loc)[names(adm_loc) == adm2_code_orig] <- "adm2_code"
+names(adm_map)[names(adm_map) == adm0_name_orig] <- "adm0_name"
+names(adm_map)[names(adm_map) == adm0_code_orig] <- "adm0_code"
+names(adm_map)[names(adm_map) == adm1_name_orig] <- "adm1_name"
+names(adm_map)[names(adm_map) == adm1_code_orig] <- "adm1_code"
+names(adm_map)[names(adm_map) == adm2_name_orig] <- "adm2_name"
+names(adm_map)[names(adm_map) == adm2_code_orig] <- "adm2_code"
 
 # Only select relevant columns
-adm_loc <- adm_loc %>%
+adm_map <- adm_map %>%
   dplyr::select(adm0_name, adm0_code, adm1_name, adm1_code, adm2_name, adm2_code)
 
 # Check names
-head(adm_loc)
-names(adm_loc)
+head(adm_map)
+names(adm_map)
 
 # Union separate polygons that belong to the same adm    
-adm_loc <- adm_loc %>%
+adm_map <- adm_map %>%
   group_by(adm0_name, adm0_code, adm1_name, adm1_code, adm2_name, adm2_code) %>%
   summarize() %>%
   ungroup() %>%
@@ -80,7 +80,7 @@ adm_loc <- adm_loc %>%
          adm0_code = param$iso3c)
 
 par(mfrow=c(1,2))
-plot(adm_loc$geometry, main = "ADM all polygons")
+plot(adm_map$geometry, main = "ADM all polygons")
 
 # Set names of ADMs that need to be removed from the polygon. 
 # These are ADMs where no crop should be allocated. Here we remove 
@@ -91,28 +91,36 @@ adm1_to_remove <- c("Area under National Administration")
 adm2_to_remove <- c("Likoma")
 
 # Remove ADM1s
-adm_loc <- adm_loc %>%
+adm_map <- adm_map %>%
   filter(adm1_name != adm1_to_remove) %>%
   filter(adm2_name != adm2_to_remove)
 
-plot(adm_loc$geometry, main = "ADM polygons removed")
+plot(adm_map$geometry, main = "ADM polygons removed")
 par(mfrow=c(1,1))
 
-
-############### SAVE ###############
-# Create adm_map_list
-adm_list <- adm_loc %>%
+# Create adm_list
+adm_list <- adm_map %>%
   as.data.frame() %>%
   dplyr::select(-geometry)
 
+# For processing of the irrigation maps we need a shapefile of the country
+# polygon in the WSG84 crs. This is default but will change, when the user sets
+# a different crs.
+adm_map_wsg84 <- adm_map %>%
+  st_transform(crs = "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")
+
+
+############### SAVE ###############
+# Save adm_list
 write_csv(adm_list, file.path(param$spam_path, glue("processed_data/lists/adm_list_{param$year}_{param$iso3c}.csv")))
 
-# Save maps in .rds and shapefile format
-saveRDS(adm_loc, file.path(param$spam_path, glue("processed_data/maps/adm/adm_loc_{param$year}_{param$iso3c}.rds")))
-write_sf(adm_loc, file.path(param$spam_path, glue("processed_data/maps/adm/adm_loc_{param$year}_{param$iso3c}.shp")))
+# Save adm maps
+saveRDS(adm_map, file.path(param$spam_path, glue("processed_data/maps/adm/adm_map_{param$year}_{param$iso3c}.rds")))
+write_sf(adm_map, file.path(param$spam_path, glue("processed_data/maps/adm/adm_map_{param$year}_{param$iso3c}.shp")))
+write_sf(adm_map_wsg84, file.path(param$spam_path, glue("processed_data/maps/adm/adm_map_wsg_84_{param$year}_{param$iso3c}.shp")))
 
 
 ############### CLEAN UP ###############
-rm(adm_loc, adm_loc_raw, adm_list, adm0_code_orig, adm0_name_orig, adm1_code_orig, adm1_name_orig,
+rm(adm_map, adm_map_raw, adm_map_wsg84, adm_list, adm0_code_orig, adm0_name_orig, adm1_code_orig, adm1_name_orig,
    adm2_code_orig, adm2_name_orig, adm1_to_remove, adm2_to_remove, iso3c_shp)
 

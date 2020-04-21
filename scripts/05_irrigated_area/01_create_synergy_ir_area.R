@@ -22,7 +22,7 @@ options(digits=4) # limit display to four digits
 
 
 ########## LOAD DATA ##########
-load_input(c("grid", "gmia", "gia"), param)
+load_data(c("adm_list", "adm_map_r", "grid", "gmia", "gia"), param)
 
 
 ############### PROCESS ###############
@@ -36,27 +36,46 @@ ir_df <-   as.data.frame(rasterToPoints(stack(grid, grid_size, gmia, gia))) %>%
   dplyr::select(-x, -y) %>%
   filter(!is.na(gridID))
 
-# Rank gia and gmia_share. Make sure that rank 1 corresponds with the highest gmia_share
-ir_df <- ir_df %>%
-  mutate(gmia_rank = cut(gmia_share, labels = c(1:10), breaks = seq(0, 1, 0.1)),
-         gmia_rank = dense_rank(desc(gmia_rank)))
-
-# Rank gia and gmia. 
-# Only gia is preferred, irrespecitive of gmia (rank of 1), 
-# followed by gmai with share between 0.9 and 1
-# followed by gmia with share between 0.8 and 1
-# ...
+# Create ranking by first taking the maximum of the irrigated area share,
+# calculate irrigated area, and then rank. In this way we prefer the largest
+# area, and hence prefer GIA over GMIA when the resolution is 30 arcsec (GIA is
+# 1 or 0). At a resolution of 5 arcmin the GMIA and grid cells with a lot of GIA
+# observations get a high rank, which is also desirable.
 
 ir_df <- ir_df %>%
-  mutate(ir_rank = if_else(gia_share == 1, 1, gmia_rank+1)) %>%
-  filter(!is.na(ir_rank))
+  mutate(ir_max = pmax(gmia, gia, na.rm = T),
+         ir_rank = cut(ir_max, labels = c(1:10), breaks = seq(0, 1, 0.1), include.lowest = T),
+         ir_rank = dense_rank(desc(ir_rank)),
+         ir_max = ir_max * grid_size) %>%
+  filter(!is.na(ir_rank)) %>%
+  dplyr::select(-gmia, -gia, -grid_size)
 
-# Calculate irrigated area per grid cell and add max irrigated area
-ir_df <- ir_df %>%
-  mutate(gmia = gmia_share * grid_size,
-         gia = gia_share * grid_size,
-         ir_max = pmax(gmia, gia, na.rm = T)) %>%
-  dplyr::select(-gia_share, -gmia_share, -gmia_rank)
+
+############### CREATE ADM LEVEL FILES ###############
+# Set adm_level
+if(param$solve_level == 0) {
+  adm_code_list <- unique(adm_list$adm0_code)
+} else {
+  adm_code_list <- unique(adm_list$adm1_code)
+}
+
+adm_code = adm_code_list[1]
+# Save 
+prepare_spatial <- function(adm_code, df, adm_map_r, param){
+  adm_sel <- paste0("adm", param$solve_level, "_code")
+  adm_sel <- "adm1_code"
+  
+  df <- left_join(adm_map_r, ir_df)
+  df <- df[df[[adm_sel]] == adm_code_list,]  
+  
+  
+  unique(df$adm1_code)
+    filter(adm_sel == adm_code)
+    x <- df[df[adm_sel]]
+  
+}
+
+
 
 
 ############### SAVE ###############
@@ -64,4 +83,4 @@ saveRDS(ir_df, file.path(proc_path, glue("harmonized/synergy_ir_area_{grid_sel}_
 
 
 ############### CLEAN UP ###############
-rm(gia_share, gmia_share, grid, grid_size, ir_df)
+rm(gia, gmia, grid, grid_size, ir_df)
