@@ -27,9 +27,9 @@ options(digits=4) # limit display to four digits
 
 
 ########## LOAD DATA ##########
-# Adm
-adm <- readRDS(file.path(param$spam_path,
-                         glue("processed_data/maps/adm/adm_{param$year}_{param$iso3c}.rds")))
+# Adm location
+adm_loc <- readRDS(file.path(param$spam_path,
+                         glue("processed_data/maps/adm/adm_loc_{param$year}_{param$iso3c}.rds")))
 
 # Grid
 grid <- raster(file.path(param$spam_path,
@@ -63,7 +63,7 @@ lookup <- bind_rows(
 grid <- file.path(param$spam_path,
                   glue("processed_data/maps/grid/grid_{param$res}_{param$year}_{param$iso3c}.tif"))
 mask <- file.path(param$spam_path,
-                  glue("processed_data/maps/adm/adm_{param$year}_{param$iso3c}.shp"))
+                  glue("processed_data/maps/adm/adm_loc_{param$year}_{param$iso3c}.shp"))
 
 # Function to loop over gaez files, warp and mask
 clip_gaez <- function(id, var, folder){
@@ -107,7 +107,7 @@ walk(lookup$id, clip_gaez, "py", "potential_yield")
 
 ############### CLEAN UP  ###############
 rm(files1, files2, lookup)
-rm(adm, gaez2crop, grid, mask)
+rm(adm_loc, gaez2crop, grid, mask)
 rm(clip_gaez)
 
 ############### MESSAGE ###############

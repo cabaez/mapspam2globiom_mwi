@@ -6,13 +6,9 @@
 #'========================================================================================================================================
 
 ############### SET UP ###############
-# Load pacman for p_load
-if(!require(pacman)){
-  install.packages("pacman")
-  library(pacman) 
-} else {
-  library(pacman)
-}
+# Install and load pacman package that automatically installs R packages if not available
+if("pacman" %in% rownames(installed.packages()) == FALSE) install.packages("pacman")
+library(pacman)
 
 # Load key packages
 p_load("tidyverse", "readxl", "stringr", "here", "scales", "glue", "sf", "raster", "mapview")
@@ -33,9 +29,10 @@ source(file.path(root, "Code/general/mapspam_functions.r"))
 
 ############### SET ADM IN LINE WITH SOLVE_SEL ###############
 # Adm list
-adm_list <- read_csv(file.path(proc_path, glue("lists/adm_map_list_{year_sel}_{iso3c_sel}.csv")))
+adm_list <- read_csv(file.path(param$spam_path, 
+                               glue("processed_data/lists/adm_list_{param$year}_{param$iso3c}.csv")))
 
-if(solve_sel == 0) {
+if(param$solve_level == 0) {
   adm_code_list <- unique(adm_list$adm0_code)
 } else {
   adm_code_list <- unique(adm_list$adm1_code)
@@ -45,37 +42,44 @@ if(solve_sel == 0) {
 ############### HARMONIZE PA CL IR AT ADM LEVEL ###############
 
 # Function to harmonize pa cl and ir according to solve_sel
-harm_pa_cl_ir <- function(adm_code_sel){
+harm_pa_cl_ir <- function(adm_code_sel, param){
 
   message(glue("Harmonize pa_cl_ir for {adm_code_sel}"))
   
   ########## LOAD DATA ##########
-  # Adm
-  adm <- readRDS(file.path(proc_path, glue("maps/adm/adm_{year_sel}_{iso3c_sel}.rds")))
+  # Adm location
+  adm_loc <- readRDS(file.path(param$spam_path,
+                               glue("processed_data/maps/adm/adm_loc_{param$year}_{param$iso3c}.rds")))
   
-  # Adm_r
-  adm_r <- readRDS(file.path(proc_path, glue("maps/adm/adm_r_{grid_sel}_{year_sel}_{iso3c_sel}.rds"))) 
+  # Rasterized Adm_loc
+  adm_r_loc <- readRDS(file.path(param$spam_path,
+                               glue("processed_data/maps/adm/adm_loc_r_{param$res}_{param$year}_{param$iso3c}.rds")))
+  
   
   # Synergy cropland
-  cl_raw <- raster(file.path(proc_path, glue("maps/cropland/cropland_med_{grid_sel}_{year_sel}_{iso3c_sel}.tif"))) 
-  names(cl_raw) <- "cl_area"
-  cl_rank_raw <- raster(file.path(proc_path, glue("maps/cropland/cropland_rank_{grid_sel}_{year_sel}_{iso3c_sel}.tif"))) 
-  names(cl_rank_raw) <- "cl_rank"
-  cl_max_raw <- raster(file.path(proc_path, glue("maps/cropland/cropland_max_{grid_sel}_{year_sel}_{iso3c_sel}.tif"))) 
-  names(cl_max_raw) <- "cl_area_max"
-  
+  # cl_raw <- raster(file.path(proc_path, glue("maps/cropland/cropland_med_{grid_sel}_{year_sel}_{iso3c_sel}.tif"))) 
+  # names(cl_raw) <- "cl_area"
+  # cl_rank_raw <- raster(file.path(proc_path, glue("maps/cropland/cropland_rank_{grid_sel}_{year_sel}_{iso3c_sel}.tif"))) 
+  # names(cl_rank_raw) <- "cl_rank"
+  # cl_max_raw <- raster(file.path(proc_path, glue("maps/cropland/cropland_max_{grid_sel}_{year_sel}_{iso3c_sel}.tif"))) 
+  # names(cl_max_raw) <- "cl_area_max"
+  # 
   # Synergy irrigated area
-  ir_area_raw <- readRDS(file.path(proc_path, glue("harmonized/synergy_ir_area_{grid_sel}_{year_sel}_{iso3c_sel}.rds")))
+  syn_ir <- readRDS(file.path(param$spam_path,
+    glue("processed_data/intermediate_output/synergy_ir_area_{param$res}_{param$year}_{param$iso3c}.rds")))
   
   # Grid
-  grid <- raster(file.path(proc_path, glue("maps/grid/grid_{grid_sel}_r_{year_sel}_{iso3c_sel}.tif")))
+  grid <- raster(file.path(param$spam_path,
+                           glue("processed_data/maps/grid/grid_{param$res}_{param$year}_{param$iso3c}.tif")))
   names(grid) <- "gridID"
   
   # Physical area
-  pa_raw <- read_csv(file.path(proc_path, glue("harmonized/{adm_code_sel}/pa_{year_sel}_{adm_code_sel}_{iso3c_sel}.csv"))) 
+  pa_raw <- read_csv(file.path(param$spam_path,
+    glue("processed_data/intermediate_output/{adm_code}/pa_{param$year}_{adm_code}_{param$iso3c}.csv"))) 
   
   # Farming system
-  pa_fs_raw <- read_csv(file.path(proc_path, glue("harmonized/{adm_code_sel}/pa_fs_{year_sel}_{adm_code_sel}_{iso3c_sel}.csv"))) 
+  pa_fs_raw <- read_csv(file.path(param$spam_path,
+    glue("processed_data/intermediate_output/{adm_code}/pa_fs_{param$year}_{adm_code}_{param$iso3c}.csv"))) 
   
   
   ############### PREPARATIONS ###############

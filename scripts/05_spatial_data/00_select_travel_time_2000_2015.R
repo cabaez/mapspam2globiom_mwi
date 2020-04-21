@@ -30,7 +30,7 @@ options(digits=4) # limit display to four digits
 grid <- file.path(param$spam_path,
                   glue("processed_data/maps/grid/grid_{param$res}_{param$year}_{param$iso3c}.tif"))
 mask <- file.path(param$spam_path,
-                  glue("processed_data/maps/adm/adm_{param$year}_{param$iso3c}.shp"))
+                  glue("processed_data/maps/adm/adm_loc_{param$year}_{param$iso3c}.shp"))
 output <- file.path(param$spam_path,
                     glue("processed_data/maps/accessibility/accessibility_{param$res}_{param$year}_{param$iso3c}.tif"))
 

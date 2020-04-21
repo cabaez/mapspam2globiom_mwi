@@ -15,7 +15,7 @@ if("pacman" %in% rownames(installed.packages()) == FALSE) install.packages("pacm
 library(pacman)
 
 # Load key packages
-p_load("tidyverse", "readxl", "stringr", "here", "scales", "glue", "gdalUtils", "raster", "sf")
+p_load("mapspam2globiom", "tidyverse", "readxl", "stringr", "here", "scales", "glue", "gdalUtils", "raster", "sf")
 
 # Set root
 root <- here()
@@ -26,10 +26,6 @@ options(digits=4) # limit display to four digits
 
 
 ############### LOAD DATA ###############
-# Adm
-adm <- readRDS(file.path(param$spam_path,
-                         glue("processed_data/maps/adm/adm_{param$year}_{param$iso3c}.rds")))
-
 # Raw gia file
 gia_raw <- raster(file.path(param$raw_path, "gia/global_irrigated_areas.tif"))
 
@@ -51,7 +47,7 @@ if(!file.exists(file.path(param$raw_path, "gia/global_irrigated_areas_crs.tif"))
 grid <- file.path(param$spam_path,
                   glue("processed_data/maps/grid/grid_{param$res}_{param$year}_{param$iso3c}.tif"))
 mask <- file.path(param$spam_path,
-                  glue("processed_data/maps/adm/adm_{param$year}_{param$iso3c}.shp"))
+                  glue("processed_data/maps/adm/adm_loc_{param$year}_{param$iso3c}.shp"))
 input <- file.path(param$raw_path, "gia/global_irrigated_areas_crs.tif")
 output <- file.path(param$raw_path,
                     glue("gia/gia_temp_{param$year}_{param$iso3c}.tif"))
@@ -59,8 +55,10 @@ output <- file.path(param$raw_path,
 # Clip to adm
 # Warp and mask
 # Use r = "near" for categorical values.
-gia_temp <- align_rasters(unaligned = input, reference = grid, dstfile = output,
-                          cutline = mask, crop_to_cutline = F, 
+# Use crop to cutline to crop.
+# TODO probably does not work at 30sec!!
+gia_temp <- gdalUtils::gdalwarp(srcfile = input, dstfile = output,
+                          cutline = mask, crop_to_cutline = T, 
                           r = "near", verbose = F, output_Raster = T, overwrite = T)
   
 # Reclassify
@@ -84,7 +82,7 @@ if(param$res == "5min"){
   grid <- file.path(param$spam_path,
     glue("processed_data/maps/grid/grid_{param$res}_{param$year}_{param$iso3c}.tif"))
   mask <- file.path(param$spam_path,
-    glue("processed_data/maps/adm/adm_{param$year}_{param$iso3c}.shp"))
+    glue("processed_data/maps/adm/adm_loc_{param$year}_{param$iso3c}.shp"))
   input <- file.path(param$spam_path, 
     glue("processed_data/maps/irrigated_area/gia_temp_{param$year}_{param$iso3c}.tif"))
   output <- file.path(param$spam_path,
@@ -92,7 +90,11 @@ if(param$res == "5min"){
   
   # Warp and mask
   # Use average to calculate share of irrigated area
-  gia_temp <- gdalwarp(srcfile = input, dstfile = output, cutline = mask, crop_to_cutline = F, 
-                              r = "average", verbose = F, output_Raster = T, overwrite = T)
+  gia_temp <- align_rasters(unaligned = input, reference = grid, dstfile = output,
+                cutline = mask, crop_to_cutline = F, 
+                r = "average", verbose = F, output_Raster = T, overwrite = T)
+  plot(gia_temp)
 }
 
+############### CLEAN UP ###############
+rm(gia, gia_raw, gia_temp)

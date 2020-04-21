@@ -11,7 +11,7 @@ if("pacman" %in% rownames(installed.packages()) == FALSE) install.packages("pacm
 library(pacman)
 
 # Load key packages
-p_load("tidyverse", "readxl", "stringr", "here", "scales", "glue", "sf", "raster")
+p_load("mapspam2globiom", "tidyverse", "readxl", "stringr", "here", "scales", "glue", "sf", "raster")
 
 # Set root
 root <- here()
@@ -22,20 +22,7 @@ options(digits=4) # limit display to four digits
 
 
 ########## LOAD DATA ##########
-# Grid
-grid <- raster(file.path(param$spam_path,
-   glue("processed_data/maps/grid/grid_{param$res}_{param$year}_{param$iso3c}.tif")))
-names(grid) <- "gridID"
-
-# Gia
-gia <- raster(file.path(param$spam_path,
-  glue("processed_data/maps/irrigated_area/gia_{param$res}_{param$year}_{param$iso3c}.tif"))) 
-names(gia) <- "gia"
-
-# Gmia
-gmia <- raster(file.path(param$spam_path,
-  glue("processed_data/maps/irrigated_area/gmia_{param$res}_{param$year}_{param$iso3c}.tif"))) 
-names(gmia) <- "gmia"
+load_input(c("grid", "gmia", "gia"), param)
 
 
 ############### PROCESS ###############
@@ -45,7 +32,7 @@ grid_size <- grid_size * 100 # in ha
 names(grid_size) <- "grid_size"
 
 # Create df of gia
-ir_df <-   as.data.frame(rasterToPoints(stack(grid, grid_size, gia))) %>%
+ir_df <-   as.data.frame(rasterToPoints(stack(grid, grid_size, gmia, gia))) %>%
   dplyr::select(-x, -y) %>%
   filter(!is.na(gridID))
 

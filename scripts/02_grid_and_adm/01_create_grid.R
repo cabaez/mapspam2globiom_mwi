@@ -26,13 +26,13 @@ options(digits=4) # limit display to four digits
 
 
 ############### LOAD DATA ###############
-# Adm
-adm <- readRDS(file.path(param$spam_path,
-                         glue("processed_data/maps/adm/adm_{param$year}_{param$iso3c}.rds")))
+# Adm location
+adm_loc <- readRDS(file.path(param$spam_path,
+                         glue("processed_data/maps/adm/adm_loc_{param$year}_{param$iso3c}.rds")))
 
 
 ############### CREATE COUNTRY GRID ###############
-grid <- create_grid(border = adm, param = param)
+grid <- create_grid(border = adm_loc, param = param)
 plot(grid)
 
 

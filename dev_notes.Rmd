@@ -46,7 +46,12 @@ update 04_synergy_cropland for now using SASAM product
 compare_processed statistics
 compare raw statistics
 remove cl maps and df in harmonization file when they are redundant to save memory space
-# Still to do 
+Create separated functions to calculate priors for each system so they can be easily adjusted.
+
+
+# To do for running over adm.
+- prep_gaez is prepared for all gridID cells. This will become very large for large countries and at 30 arcsec. It should be (1) split over ADMs. and (2) probably only create it for the relevant gridIDs that for which the landcover data is generated in the harmonization process.
+
 
 # Process raw subnational statistics file.
 
@@ -62,6 +67,8 @@ Set is.na(ADM2) to 0.
 # Introduce class subnat stat?!
 # Perhaps introduce a class subnat_stat, which always consists of subnatstat in wide format.
 # And has passed a number of checks so it is always consistent. 
+CHECK that need to be added: When running solve_level = 1, if data is complete at that level, i.e. if data is available for all crops at ADM1 level!
+
 
 # Scaling to FAOSTAT. 
 We do not scale if there are missing values and sum(ADM1)<faostat. Here the same rule should be applied. If the sum is very close to FAOSTAT, missing values should be set to 0. 

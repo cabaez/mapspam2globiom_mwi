@@ -30,7 +30,7 @@ options(digits=4) # limit display to four digits
 grid <- file.path(param$spam_path,
                   glue("processed_data/maps/grid/grid_{param$res}_{param$year}_{param$iso3c}.tif"))
 mask <- file.path(param$spam_path,
-                  glue("processed_data/maps/adm/adm_{param$year}_{param$iso3c}.shp"))
+                  glue("processed_data/maps/adm/adm_loc_{param$year}_{param$iso3c}.shp"))
 input <- file.path(param$spam_path,
                    glue("raw_data/sasam/{param$continent}/cropland_ratio_{param$continent}.tif"))
 output <- file.path(param$spam_path,
@@ -57,7 +57,7 @@ rm(grid, input, mask, output, output_map)
 grid <- file.path(param$spam_path,
                   glue("processed_data/maps/grid/grid_{param$res}_{param$year}_{param$iso3c}.tif"))
 mask <- file.path(param$spam_path,
-                  glue("processed_data/maps/adm/adm_{param$year}_{param$iso3c}.shp"))
+                  glue("processed_data/maps/adm/adm_loc_{param$year}_{param$iso3c}.shp"))
 input <- file.path(param$spam_path,
                    glue("raw_data/sasam/{param$continent}/cropland_max_{param$continent}.tif"))
 output <- file.path(param$spam_path,
@@ -84,7 +84,7 @@ rm(a, grid, input, mask, output, output_map)
 grid <- file.path(param$spam_path,
                       glue("processed_data/maps/grid/grid_{param$res}_{param$year}_{param$iso3c}.tif"))
 mask <- file.path(param$spam_path,
-                  glue("processed_data/maps/adm/adm_{param$year}_{param$iso3c}.shp"))
+                  glue("processed_data/maps/adm/adm_loc_{param$year}_{param$iso3c}.shp"))
 input <- file.path(param$spam_path,
                    glue("raw_data/sasam/{param$continent}/cropland_confidence_level_{param$continent}.tif"))
 output <- file.path(param$spam_path,
