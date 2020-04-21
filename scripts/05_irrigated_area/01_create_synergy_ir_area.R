@@ -59,23 +59,22 @@ if(param$solve_level == 0) {
   adm_code_list <- unique(adm_list$adm1_code)
 }
 
-adm_code = adm_code_list[1]
+
 # Save 
-prepare_spatial <- function(adm_code, df, adm_map_r, param){
+prepare_spatial <- function(adm_code, df, var, adm_map_r, param){
   adm_sel <- paste0("adm", param$solve_level, "_code")
-  adm_sel <- "adm1_code"
+  df <- dplyr::left_join(adm_map_r, ir_df)
+  df <- df[df[[adm_sel]] == adm_code_list,] %>%
+    dplyr::select(gridID, ir_rank, ir_max)
   
-  df <- left_join(adm_map_r, ir_df)
-  df <- df[df[[adm_sel]] == adm_code_list,]  
-  
-  
-  unique(df$adm1_code)
-    filter(adm_sel == adm_code)
-    x <- df[df[adm_sel]]
-  
+  temp_path <- file.path(param$spam_path,
+                         glue::glue("processed_data/intermediate_output/{adm_code}"))
+  dir.create(temp_path, recursive = T, showWarnings = F)
+  saveRDS(df, file.path(temp_path,
+                              glue::glue("{var}_{param$year}_{adm_code}_{param$iso3c}.rds")))
 }
 
-
+walk(adm_code_list, prepare_spatial, ir_df, "ir", adm_map_r, param)
 
 
 ############### SAVE ###############
