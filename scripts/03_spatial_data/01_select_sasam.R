@@ -30,11 +30,11 @@ options(digits=4) # limit display to four digits
 grid <- file.path(param$spam_path,
                   glue("processed_data/maps/grid/grid_{param$res}_{param$year}_{param$iso3c}.tif"))
 mask <- file.path(param$spam_path,
-                  glue("processed_data/maps/adm/adm_loc_{param$year}_{param$iso3c}.shp"))
+                  glue("processed_data/maps/adm/adm_map_{param$year}_{param$iso3c}.shp"))
 input <- file.path(param$spam_path,
                    glue("raw_data/sasam/{param$continent}/cropland_ratio_{param$continent}.tif"))
 output <- file.path(param$spam_path,
-                    glue("processed_data/maps/cropland/cropland_med_share_{param$res}_{param$year}_{param$iso3c}.tif"))
+                    glue("processed_data/maps/cropland/cl_med_share_{param$res}_{param$year}_{param$iso3c}.tif"))
 
 # Warp and mask
 output_map <- align_rasters(unaligned = input, reference = grid, dstfile = output,
@@ -46,7 +46,7 @@ a <- area(output_map)
 output_map <- output_map * a * 100
 plot(output_map)
 writeRaster(output_map, file.path(param$spam_path,
-  glue("processed_data/maps/cropland/cropland_med_{param$res}_{param$year}_{param$iso3c}.tif")),overwrite = T)
+  glue("processed_data/maps/cropland/cl_med_{param$res}_{param$year}_{param$iso3c}.tif")),overwrite = T)
 
 # clean up
 rm(grid, input, mask, output, output_map)
@@ -57,11 +57,11 @@ rm(grid, input, mask, output, output_map)
 grid <- file.path(param$spam_path,
                   glue("processed_data/maps/grid/grid_{param$res}_{param$year}_{param$iso3c}.tif"))
 mask <- file.path(param$spam_path,
-                  glue("processed_data/maps/adm/adm_loc_{param$year}_{param$iso3c}.shp"))
+                  glue("processed_data/maps/adm/adm_map_{param$year}_{param$iso3c}.shp"))
 input <- file.path(param$spam_path,
                    glue("raw_data/sasam/{param$continent}/cropland_max_{param$continent}.tif"))
 output <- file.path(param$spam_path,
-                    glue("processed_data/maps/cropland/cropland_max_share_{param$res}_{param$year}_{param$iso3c}.tif"))
+                    glue("processed_data/maps/cropland/cl_share_{param$res}_{param$year}_{param$iso3c}.tif"))
 
 # warp and mask
 output_map <- align_rasters(unaligned = input, reference = grid, dstfile = output,
@@ -73,7 +73,7 @@ a <- area(output_map)
 output_map <- output_map * a * 100
 plot(output_map)
 writeRaster(output_map, file.path(param$spam_path,
-                             glue("processed_data/maps/cropland/cropland_max_{param$res}_{param$year}_{param$iso3c}.tif")),overwrite = T)
+                             glue("processed_data/maps/cropland/cl_max_{param$res}_{param$year}_{param$iso3c}.tif")),overwrite = T)
 
 # clean up
 rm(a, grid, input, mask, output, output_map)
@@ -84,11 +84,11 @@ rm(a, grid, input, mask, output, output_map)
 grid <- file.path(param$spam_path,
                       glue("processed_data/maps/grid/grid_{param$res}_{param$year}_{param$iso3c}.tif"))
 mask <- file.path(param$spam_path,
-                  glue("processed_data/maps/adm/adm_loc_{param$year}_{param$iso3c}.shp"))
+                  glue("processed_data/maps/adm/adm_map_{param$year}_{param$iso3c}.shp"))
 input <- file.path(param$spam_path,
                    glue("raw_data/sasam/{param$continent}/cropland_confidence_level_{param$continent}.tif"))
 output <- file.path(param$spam_path,
-                    glue("processed_data/maps/cropland/cropland_rank_{param$res}_{param$year}_{param$iso3c}.tif"))
+                    glue("processed_data/maps/cropland/cl_rank_{param$res}_{param$year}_{param$iso3c}.tif"))
 
 # warp and mask
 # Use r = "med" to select the median probability as probability is a categorical variable (1-32).

@@ -88,6 +88,11 @@ Also in case there is not ir area (CL > IR) SPAM uses the rule that CL = IR), wh
 
 Maybe have to use same rule as used for gia to run GMIA as it it might be that warping a 5min map to 5min changes the results. 
 
+CHECK GMIA raster is smaller than GIA (although extent etc is the same). It does not seem to include all rasters that are located on the border. Probably is related with the fact that GMIA is already at 5 arcmin. CHECK if this has impact, probably so as this excludes border cells.
+
 # Load_inputs funtion
 Should read file list from an internal file with names, not hardcode. 
 Perhaps also create function that loads data as there is a lot of repetition.
+
+Similarly there is a need to make the other paths variable. At the moment, load spatial has a hard coded folder, this should become a variable so it is taken from the param.
+Maybe better to add these to the parameters file

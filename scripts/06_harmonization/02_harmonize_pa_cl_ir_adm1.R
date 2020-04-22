@@ -11,7 +11,7 @@ if("pacman" %in% rownames(installed.packages()) == FALSE) install.packages("pacm
 library(pacman)
 
 # Load key packages
-p_load("tidyverse", "readxl", "stringr", "here", "scales", "glue", "sf", "raster", "mapview")
+p_load("mapspam2globiom", "tidyverse", "readxl", "stringr", "here", "scales", "glue", "sf", "raster", "mapview")
 
 # Set root
 root <- here()
@@ -56,15 +56,7 @@ harm_pa_cl_ir <- function(adm_code_sel, param){
                                glue("processed_data/maps/adm/adm_loc_r_{param$res}_{param$year}_{param$iso3c}.rds")))
   
   
-  # Synergy cropland
-  # cl_raw <- raster(file.path(proc_path, glue("maps/cropland/cropland_med_{grid_sel}_{year_sel}_{iso3c_sel}.tif"))) 
-  # names(cl_raw) <- "cl_area"
-  # cl_rank_raw <- raster(file.path(proc_path, glue("maps/cropland/cropland_rank_{grid_sel}_{year_sel}_{iso3c_sel}.tif"))) 
-  # names(cl_rank_raw) <- "cl_rank"
-  # cl_max_raw <- raster(file.path(proc_path, glue("maps/cropland/cropland_max_{grid_sel}_{year_sel}_{iso3c_sel}.tif"))) 
-  # names(cl_max_raw) <- "cl_area_max"
-  # 
-  # Synergy irrigated area
+ # Synergy irrigated area
   syn_ir <- readRDS(file.path(param$spam_path,
     glue("processed_data/intermediate_output/synergy_ir_area_{param$res}_{param$year}_{param$iso3c}.rds")))
   
