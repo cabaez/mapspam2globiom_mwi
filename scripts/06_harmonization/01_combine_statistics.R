@@ -22,7 +22,7 @@ options(digits=4)
 
 
 ############### LOAD DATA ###############
-load_data(c("adm_list", "ha", "fs", "ci"), param)
+load_data(c("ha", "fs", "ci"), param)
 
 
 ############### PROCESS HARVESTED AREA ###############
@@ -70,7 +70,7 @@ ci <- ci %>%
 
 # Set -999 and empty string values
 ci <- ci %>%
-  mutate(ci = if_else(ci == -999, NA_real_, ci))
+  mutate(ci = if_else(ci == -999, NA_integer_, ci))
 
 # Select relevent crops using ha
 ci <- ci %>%
@@ -89,3 +89,7 @@ ci <- ci %>%
 
 ############### SET ADM IN LINE WITH SOLVE_SEL ###############
 prepare_pa_stat(ha, fs, ci, param)
+
+
+############### CLEAN UP ###############
+rm(crop_na_0, ci, fs, ha)
