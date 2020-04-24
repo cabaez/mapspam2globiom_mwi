@@ -35,7 +35,7 @@ param <- spam_par(spam_path = spamc_path,
                          year = 2010,
                          res = "5min",
                          adm_level = 2,
-                         solve_level = 1,
+                         solve_level = 0,
                          model = "max_score")
 
 # Show parameters
