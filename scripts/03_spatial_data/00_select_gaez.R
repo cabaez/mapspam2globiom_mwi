@@ -28,8 +28,8 @@ options(digits=4) # limit display to four digits
 
 ########## LOAD DATA ##########
 # Adm location
-adm_loc <- readRDS(file.path(param$spam_path,
-                         glue("processed_data/maps/adm/adm_loc_{param$year}_{param$iso3c}.rds")))
+adm_map <- readRDS(file.path(param$spam_path,
+                         glue("processed_data/maps/adm/adm_map_{param$year}_{param$iso3c}.rds")))
 
 # Grid
 grid <- raster(file.path(param$spam_path,
