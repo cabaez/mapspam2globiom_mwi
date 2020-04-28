@@ -27,8 +27,8 @@ options(digits=4) # limit display to four digits
 
 ############### LOAD DATA ###############
 # Adm location
-adm_loc <- readRDS(file.path(param$spam_path,
-                         glue("processed_data/maps/adm/adm_loc_{param$year}_{param$iso3c}.rds")))
+adm_map <- readRDS(file.path(param$spam_path,
+                         glue("processed_data/maps/adm/adm_map_{param$year}_{param$iso3c}.rds")))
 
 # urban extent, select country
 grump_raw <- read_sf(file.path(param$raw_path, "grump/global_urban_extent_polygons_v1.01.shp"))
@@ -42,7 +42,7 @@ plot(grump$geometry, col = "red", add = T)
 
 
 ############### SAVE ###############
-saveRDS(grump, file.path(param$spam_path, glue("processed_data/maps/population/urban_extent_{param$year}_{param$iso3c}.rds")))
+saveRDS(grump, file.path(param$spam_path, glue("processed_data/maps/population/urb_{param$year}_{param$iso3c}.rds")))
 
 
 ############### CLEAN UP ###############

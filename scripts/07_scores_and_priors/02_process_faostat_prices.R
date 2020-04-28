@@ -5,13 +5,6 @@
 #' Contact:  michiel.vandijk@wur.nl
 #'========================================================================================================================================
 
-#'========================================================================================================================================
-#' Project:  mapspam
-#' Subject:  Script to prepate biophysical suitability and potential yield
-#' Author:   Michiel van Dijk
-#' Contact:  michiel.vandijk@wur.nl
-#'========================================================================================================================================
-
 ############### SET UP ###############
 # Install and load pacman package that automatically installs R packages if not available
 if("pacman" %in% rownames(installed.packages()) == FALSE) install.packages("pacman")
@@ -80,7 +73,8 @@ price_iso3c <- full_join(price, area) %>%
 
 # Filter out continent prices
 price_iso3c <- price_iso3c %>%
-  filter(continent == countrycode(param$iso3c, "iso3c", "continent")) 
+  filter(continent == countrycode(param$iso3c, "iso3c", "continent")) %>%
+  dplyr::select(-continent)
 
 # Check missing
 crop_list <- faostat2crop %>%
@@ -88,13 +82,13 @@ crop_list <- faostat2crop %>%
   unique()
 
 miss_crop <- full_join(crop_list, price_iso3c) %>%
-  complete(crop, continent) %>%
+  complete(crop) %>%
   filter(is.na(price))
 
 
 ########## SAVE ##########
 write_csv(price_iso3c, file.path(param$spam_path, 
-  glue("processed_data/agricultural_statistics/faostat_crop_prices_{param$year}_{param$iso3c}.csv")))
+  glue("processed_data/agricultural_statistics/crop_prices_{param$year}_{param$iso3c}.csv")))
 
 
 ########## CLEAN UP ##########

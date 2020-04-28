@@ -37,7 +37,7 @@ mask <- file.path(param$spam_path,
                   glue("processed_data/maps/adm/adm_map_{param$year}_{param$iso3c}.shp"))
 input <- file.path(param$raw_path, "worldpop/ppp_2010_1km_Aggregated.tif")
 output <- file.path(param$spam_path,
-                    glue("processed_data/maps/population/population_{param$res}_{param$year}_{param$iso3c}.tif"))
+                    glue("processed_data/maps/population/pop_{param$res}_{param$year}_{param$iso3c}.tif"))
 
 if(param$res == "30sec") {
   
@@ -61,7 +61,7 @@ if(param$res == "5min") {
   
   # Overwrite
   writeRaster(worldpop_temp, file.path(param$spam_path,
-    glue("processed_data/maps/population/population_{param$res}_{param$year}_{param$iso3c}.tif")), 
+    glue("processed_data/maps/population/pop_{param$res}_{param$year}_{param$iso3c}.tif")), 
     overwrite = T)
 }
 

@@ -5,6 +5,9 @@ date: "03/04/2020"
 output: html_document
 ---
 
+KEY!!
+Overlay of grid and acc shows that the extent is the same BUT actual selected cells are different on the edges (5 arcmin grid)!!! This means that allign rasters in combination with cutline does not select the same cells> Probably easiest solution is to use gdal to create the raster....perhaps create (1) create raster of ALL cellS touched by polygon and then run gdal...
+
 - check where to store all the mappings files. On the one hand we should store the in the package on the other hand we should provide a way to update them.
 - check where AQUASTAT and FAOSTAT version. Probably best is in setup file. Add and if statement to indicate when this is forgotten. 
 - Create mapping of gaez when maps are missing!
@@ -40,6 +43,10 @@ output: html_document
 - Add check if there are NAs in score! THis often causes problems.
 - Related: what will happen if all suit is zero at an ADM1 level when the model is run at ADM1. Need to investigate this.
 - If 5 arcmin input such as GMIA and GAEZ are first clipped and then reprojected to 30 arcsec, many border cells will be lost because the clip will only include grid cells of which the center is included. Not clear if gdalwarp first clips or first warps. CHECK. For GMAI, we need to change the process, when creating 30arcsec maps, perhap cropping at res+2 grid cells to ensure all grid cells are included. 
+- Decide what to do with all the tables in mappings_spam. Now they are loaded from an EXCEL sheet in the respective functions. Probably better to add to load_data function = introduced from in split_score onwards. Still do replace in replace Gaez function.
+- Put stricted check on load_data functions as there is no warning when an input is not found.
+- not smart to use adm_code for folder names of adms as this interfers with selecting of adm_code from files like pa and pa_fs. In due time change all to another variable name. adm_code_sel?
+- Add some kind of check, which compares the list of adms in the rasterized version with those in statistics. It is possible that a very small adm drops out if it is smaller than the grid cells. In this case things might go wrong. User should merge this with another adm and add statistics.
 
 # To do
 update 04_synergy_cropland for now using SASAM product

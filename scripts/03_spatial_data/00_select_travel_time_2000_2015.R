@@ -30,9 +30,9 @@ options(digits=4) # limit display to four digits
 grid <- file.path(param$spam_path,
                   glue("processed_data/maps/grid/grid_{param$res}_{param$year}_{param$iso3c}.tif"))
 mask <- file.path(param$spam_path,
-                  glue("processed_data/maps/adm/adm_loc_{param$year}_{param$iso3c}.shp"))
+                  glue("processed_data/maps/adm/adm_map_{param$year}_{param$iso3c}.shp"))
 output <- file.path(param$spam_path,
-                    glue("processed_data/maps/accessibility/accessibility_{param$res}_{param$year}_{param$iso3c}.tif"))
+                    glue("processed_data/maps/accessibility/acc_{param$res}_{param$year}_{param$iso3c}.tif"))
 
 # There are two products, one for around 2000 and one for around 2015, we select on the basis of reference year
 if (param$year <= 2007){

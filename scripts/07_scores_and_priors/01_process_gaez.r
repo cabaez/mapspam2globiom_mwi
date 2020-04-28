@@ -22,4 +22,5 @@ options(digits=4)
 
 
 ############### PROCESS ###############
-prepare_bs_yg(var, param)
+prepare_bs_yg("biophysical_suitability", param)
+prepare_bs_yg("potential_yield", param)
