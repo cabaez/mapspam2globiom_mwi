@@ -70,7 +70,7 @@ ci <- ci %>%
 
 # Set -999 and empty string values
 ci <- ci %>%
-  mutate(ci = if_else(ci == -999, NA_integer_, ci))
+  mutate(ci = if_else(ci == -999, NA_real_, ci))
 
 # Select relevent crops using ha
 ci <- ci %>%

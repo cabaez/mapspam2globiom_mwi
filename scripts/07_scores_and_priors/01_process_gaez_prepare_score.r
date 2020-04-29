@@ -21,6 +21,10 @@ options(scipen=999) # Surpress scientific notation
 options(digits=4)
 
 
-############### PROCESS ###############
+############### PREPARE BS AND YG ###############
 prepare_bs_yg("biophysical_suitability", param)
 prepare_bs_yg("potential_yield", param)
+
+
+############### PREPARE SCORE ###############
+prepare_score(param)

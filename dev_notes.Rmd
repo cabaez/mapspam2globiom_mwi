@@ -47,6 +47,8 @@ Overlay of grid and acc shows that the extent is the same BUT actual selected ce
 - Put stricted check on load_data functions as there is no warning when an input is not found.
 - not smart to use adm_code for folder names of adms as this interfers with selecting of adm_code from files like pa and pa_fs. In due time change all to another variable name. adm_code_sel?
 - Add some kind of check, which compares the list of adms in the rasterized version with those in statistics. It is possible that a very small adm drops out if it is smaller than the grid cells. In this case things might go wrong. User should merge this with another adm and add statistics.
+- Add res to name of pa and pa_fs so it is clear when models with different res are run.
+- perhaps change the name of adm_level in param as this is the same name as a header which might be confusing, adm_depth? or adm_detail?.
 
 # To do
 update 04_synergy_cropland for now using SASAM product
@@ -67,7 +69,7 @@ Check what happens when
 
 # Process raw subnational statistics file.
 
-Code to rebalance ADM totals does not account for cases when, say, all ADM2 units for maize have a value except for one (or more) and the sum of the ADMs where values are not NA are nearly the same as the total of ADM2 but not identical due to rounding. In these cases ADM1 will not be updated as there are missing values. The result is that when the artificial ADMs are constructed the artificial ADM that represents all maize will have a very small value which creates problems in GAMS. Write a function to checks for these cases and presents a warning. Perhaps introduce a threshold. If |sum(ADM2)-ADM1| < 10 Replace and set missing ADM2 to 0. 
+Code to rebalance ADM totals does not account for cases when, say, all ADM2 units for maize have a value except for one (or more) and the sum of the ADMs where values are not NA are nearly the same as the total of ADM2 but not identical due to rounding. In these cases ADM1 will not be updated as there are missing values. The result is that when the artificial ADMs are constructed the artificial ADM that represents all maize will have a very small value which creates problems in GAMS. Write a function to checks for these cases and presents a warning. Perhaps introduce a threshold. If |sum(ADM2)-ADM1| < 10 Replace and set missing ADM2 to 0. This also means that no artificial adms will be created with pa = 0 as is the case for tea in the present data set. 
 
 Wrap rebalancing code in function. 
 
