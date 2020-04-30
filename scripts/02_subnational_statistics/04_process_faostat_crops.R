@@ -1,28 +1,12 @@
 #'========================================================================================================================================
-#' Project:  mapspam
+#' Project:  mapspam2globiom
 #' Subject:  Script to process FAOSTAT crops data
 #' Author:   Michiel van Dijk
 #' Contact:  michiel.vandijk@wur.nl
 #'========================================================================================================================================
 
-############### SET UP ###############
-# Load pacman for p_load
-if(!require(pacman)){
-  install.packages("pacman")
-  library(pacman) 
-} else {
-  library(pacman)
-}
-
-# Load key packages
-p_load("mapspam2globiom", "tidyverse", "readxl", "stringr", "here", "scales", "glue", "countrycode")
-
-# Set root
-root <- here()
-
-# R options
-options(scipen=999) # Supress scientific notation
-options(digits=4) # limit display to four digits
+############### SOURCE PARAMETERS ###############
+source(here("scripts/ALL/01_model_setup.r"))
 
 
 ############### LOAD DATA ###############
@@ -76,3 +60,4 @@ write_csv(faostat_crop_list, file.path(param$spam_path,
 
 ########## CLEAN UP ##########  
 rm(area, faostat_crop_list, faostat2crop, prod, faostat_crops_version)
+

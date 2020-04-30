@@ -1,6 +1,6 @@
 #'========================================================================================================================================
-#' Project:  mapspam2globiom
-#' Subject:  Setup SPAMc
+#' Project:  mapspam2globiom_mwi
+#' Subject:  Setup SPAM
 #' Author:   Michiel van Dijk
 #' Contact:  michiel.vandijk@wur.nl
 #'========================================================================================================================================
@@ -11,10 +11,7 @@ if("pacman" %in% rownames(installed.packages()) == FALSE) install.packages("pacm
 library(pacman)
 
 # Load key packages
-p_load("mapspam2globiom", "tidyverse", "readxl", "stringr", "here", "scales", "glue", "gdalUtils", "sf", "raster")
-
-# Set root folder, which is defined by RStudio project
-root <- here()
+p_load("mapspam2globiom", "here", "glue", "raster", "readxl", "tidyverse", "sf")
 
 # R options
 options(scipen=999) # Supress scientific notation
@@ -40,7 +37,4 @@ param <- spam_par(spam_path = spamc_path,
 
 # Show parameters
 print(param)
-
-# Save 
-saveRDS(param, file.path(param$spam_path, "parameters/spam_par.rds"))
 

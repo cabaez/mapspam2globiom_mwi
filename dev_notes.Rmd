@@ -8,6 +8,7 @@ output: html_document
 KEY!!
 Overlay of grid and acc shows that the extent is the same BUT actual selected cells are different on the edges (5 arcmin grid)!!! This means that allign rasters in combination with cutline does not select the same cells> Probably easiest solution is to use gdal to create the raster....perhaps create (1) create raster of ALL cellS touched by polygon and then run gdal...
 
+- Check why there is an indication of ir slack when harmonizing at adm1_level in MWI.
 - Check: with present data adm_art_map has art_adms that are approximately zero. This should not happen if the rebalancing would be succesful. Added code to remove them in combine model input to remove them!
 - check where to store all the mappings files. On the one hand we should store the in the package on the other hand we should provide a way to update them.
 - check where AQUASTAT and FAOSTAT version. Probably best is in setup file. Add and if statement to indicate when this is forgotten. 
@@ -50,6 +51,10 @@ Overlay of grid and acc shows that the extent is the same BUT actual selected ce
 - Add some kind of check, which compares the list of adms in the rasterized version with those in statistics. It is possible that a very small adm drops out if it is smaller than the grid cells. In this case things might go wrong. User should merge this with another adm and add statistics.
 - Add res to name of pa and pa_fs so it is clear when models with different res are run.
 - perhaps change the name of adm_level in param as this is the same name as a header which might be confusing, adm_depth? or adm_detail?.
+- https://github.com/wri/MAPSPAM has meta data with fixed colors for each crop!! Can be used to make a nice map that depicts the dominant crop per grid cell!
+- Also has FAO-spam concordance. Add those tables to the mappings Excel file!
+- Remove x, y from results file
+- CHeck allocations. E.g vege_L seems to be allocated to only two grid cells using max_score? Is this the same as on SPAM??
 
 # To do
 update 04_synergy_cropland for now using SASAM product

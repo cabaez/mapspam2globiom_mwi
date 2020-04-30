@@ -1,24 +1,12 @@
 #'========================================================================================================================================
-#' Project:  mapspam
+#' Project:  mapspam2globiom_mwi
 #' Subject:  Process adm shapefile
 #' Author:   Michiel van Dijk
 #' Contact:  michiel.vandijk@wur.nl
 #'========================================================================================================================================
 
-############### SET UP ###############
-# Load pacman for p_load
-if("pacman" %in% rownames(installed.packages()) == FALSE) install.packages("pacman")
-library(pacman)
-
-# Load key packages
-p_load("mapspam2globiom", "tidyverse", "readxl", "stringr", "here", "scales", "glue", "sf")
-
-# Set root
-root <- here()
-
-# R options
-options(scipen=999) # Supress scientific notation
-options(digits=4) # limit display to four digits
+############### SOURCE PARAMETERS ###############
+source(here("scripts/ALL/01_model_setup.r"))
 
 
 ############### LOAD DATA ###############
@@ -120,7 +108,10 @@ write_sf(adm_map, file.path(param$spam_path, glue("processed_data/maps/adm/adm_m
 write_sf(adm_map_wsg84, file.path(param$spam_path, glue("processed_data/maps/adm/adm_map_wsg_84_{param$year}_{param$iso3c}.shp")))
 
 
+############### CREATE GRID ###############
+create_grid(param)
+
+
 ############### CLEAN UP ###############
 rm(adm_map, adm_map_raw, adm_map_wsg84, adm_list, adm0_code_orig, adm0_name_orig, adm1_code_orig, adm1_name_orig,
    adm2_code_orig, adm2_name_orig, adm1_to_remove, adm2_to_remove, iso3c_shp)
-
