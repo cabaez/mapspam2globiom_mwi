@@ -5,47 +5,23 @@
 #' Contact:  michiel.vandijk@wur.nl
 #'========================================================================================================================================
 
+
 ############### SET UP ###############
-# Load pacman for p_load
-if(!require(pacman)){
-  install.packages("pacman")
-  library(pacman) 
-} else {
-  library(pacman)
-}
+# Install and load pacman package that automatically installs R packages if not available
+if("pacman" %in% rownames(installed.packages()) == FALSE) install.packages("pacman")
+library(pacman)
 
 # Load key packages
-p_load("tidyverse", "readxl", "stringr", "here", "scales", "glue", "sf", "raster", "mapview")
+p_load("mapspam2globiom", "tidyverse", "readxl", "stringr", "here", "scales", "glue")
 
 # Set root
 root <- here()
 
 # R options
-options(scipen=999) # Supress scientific notation
-options(digits=4) # limit display to four digits
-
-
-### SOURCE FUNCTIONS
-# TO_UPDATE
-source(file.path(root, "Code/general/mapspam_functions.r"))
-
-############### LINK GAMS LIBRARIES ###############
-# R will automatically find the location of GAMS if this is stored in your system (see documentation).
-# If for some reason this does not work you can set it specifically, e.g. igdx("C:/Program Files/GAMS/win64/24.6")
-igdx("")
+options(scipen=999) # Surpress scientific notation
+options(digits=4)
 
 
 ############### RUN MODEL ###############
-if(model_sel == "max_score") {
-  run_gams("max_score")  
-  } else {
-  if(model_sel == "min_entropy") {
-    message("This model is not implemented yet")
-    stop("Stop process")
-    } else {
-    message("This model is not implemented yet")
-    stop("Stop process")
-  }
-}
-
+run_spam(param)
 
