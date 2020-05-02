@@ -6,7 +6,7 @@
 #'========================================================================================================================================
 
 ############### SOURCE PARAMETERS ###############
-source(here("scripts/ALL/01_model_setup.r"))
+source(here::here("scripts/01_model_setup/01_model_setup.r"))
 
 
 ############### LOAD DATA ###############
@@ -103,9 +103,12 @@ adm_map_wsg84 <- adm_map %>%
 write_csv(adm_list, file.path(param$spam_path, glue("processed_data/lists/adm_list_{param$year}_{param$iso3c}.csv")))
 
 # Save adm maps
-saveRDS(adm_map, file.path(param$spam_path, glue("processed_data/maps/adm/adm_map_{param$year}_{param$iso3c}.rds")))
-write_sf(adm_map, file.path(param$spam_path, glue("processed_data/maps/adm/adm_map_{param$year}_{param$iso3c}.shp")))
-write_sf(adm_map_wsg84, file.path(param$spam_path, glue("processed_data/maps/adm/adm_map_wsg_84_{param$year}_{param$iso3c}.shp")))
+temp_path <- file.path(param$spam_path, glue("processed_data/maps/adm/{param$res}"))
+dir.create(temp_path, showWarnings = FALSE, recursive = TRUE)
+
+saveRDS(adm_map, file.path(temp_path, glue("adm_map_{param$year}_{param$iso3c}.rds")))
+write_sf(adm_map, file.path(temp_path, glue("adm_map_{param$year}_{param$iso3c}.shp")))
+write_sf(adm_map_wsg84, file.path(temp_path, glue("adm_map_wsg_84_{param$year}_{param$iso3c}.shp")))
 
 
 ############### CREATE GRID ###############

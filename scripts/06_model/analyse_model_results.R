@@ -28,7 +28,6 @@ options(digits=4) # limit display to four digits
 ############### LINK GAMS LIBRARIES ###############
 igdx(gams_path)
 
-
 ############### LOAD DATA ###############
 ### MODEL OUTPUT
 # model output file

@@ -5,24 +5,8 @@
 #' Contact:  michiel.vandijk@wur.nl
 #'========================================================================================================================================
 
-############### MESSAGE ###############
-message("\nRunning 03_spatial_data\\03_select_gmia.r")
-
-
-############### SET UP ###############
-# Install and load pacman package that automatically installs R packages if not available
-if("pacman" %in% rownames(installed.packages()) == FALSE) install.packages("pacman")
-library(pacman)
-
-# Load key packages
-p_load("mapspam2globiom", "tidyverse", "readxl", "stringr", "here", "scales", "glue", "gdalUtils", "raster", "sf")
-
-# Set root
-root <- here()
-
-# R options
-options(scipen=999) # Supress scientific notation
-options(digits=4) # limit display to four digits
+############### SOURCE PARAMETERS ###############
+source(here::here("scripts/01_model_setup/01_model_setup.r"))
 
 
 ############### LOAD DATA ###############
@@ -48,11 +32,14 @@ if(!file.exists(file.path(param$raw_path, "gmia/gmia_v5_aei_ha_crs.tif"))){
 if(param$res == "5min") {
   # Set files
   mask <- file.path(param$spam_path,
-                    glue("processed_data/maps/adm/adm_map_wsg_84_{param$year}_{param$iso3c}.shp"))
+                    glue("processed_data/maps/adm/{param$res}/adm_map_wsg_84_{param$year}_{param$iso3c}.shp"))
   input <- file.path(param$raw_path,
                      glue("gmia/gmia_v5_aei_ha_crs.tif"))
   output <- file.path(param$spam_path,
-                      glue("processed_data/maps/irrigated_area/gmia_temp_{param$res}_{param$year}_{param$iso3c}.tif"))
+                      glue("processed_data/maps/irrigated_area/{param$res}/gmia_temp_{param$res}_{param$year}_{param$iso3c}.tif"))
+  
+  temp_path <- file.path(param$spam_path, glue("processed_data/maps/irrigated_area/{param$res}"))
+  dir.create(temp_path, showWarnings = FALSE, recursive = TRUE)
   
   # Warp and mask
   # Use crop to cutline to crop.
@@ -66,22 +53,22 @@ if(param$res == "5min") {
   gmia_temp <- gmia_temp/(area(gmia_temp)*100)
   plot(gmia_temp)
   
-  # overwrite
+  # save
   writeRaster(gmia_temp, file.path(param$spam_path,
-                                   glue("processed_data/maps/irrigated_area/gmia_temp_{param$res}_{param$year}_{param$iso3c}.tif"))
+                                   glue("processed_data/maps/irrigated_area/{param$res}/gmia_temp_{param$res}_{param$year}_{param$iso3c}.tif"))
               ,
   overwrite = T)
 
   # Warp and mask to model resolution
   # Set files
   grid <- file.path(param$spam_path,
-                    glue("processed_data/maps/grid/grid_{param$res}_{param$year}_{param$iso3c}.tif"))
+                    glue("processed_data/maps/grid/{param$res}/grid_{param$res}_{param$year}_{param$iso3c}.tif"))
   mask <- file.path(param$spam_path,
-                    glue("processed_data/maps/adm/adm_map_{param$year}_{param$iso3c}.shp"))
+                    glue("processed_data/maps/adm/{param$res}/adm_map_{param$year}_{param$iso3c}.shp"))
   input <- file.path(param$spam_path,
-                     glue("processed_data/maps/irrigated_area/gmia_temp_{param$res}_{param$year}_{param$iso3c}.tif"))
+                     glue("processed_data/maps/irrigated_area/{param$res}/gmia_temp_{param$res}_{param$year}_{param$iso3c}.tif"))
   output <- file.path(param$spam_path,
-                      glue("processed_data/maps/irrigated_area/gmia_{param$res}_{param$year}_{param$iso3c}.tif"))
+                      glue("processed_data/maps/irrigated_area/{param$res}/gmia_{param$res}_{param$year}_{param$iso3c}.tif"))
   
   # Warp and mask
   output_map <- align_rasters(unaligned = input, reference = grid, dstfile = output,
@@ -93,7 +80,7 @@ if(param$res == "5min") {
 if(param$res == "30sec") {
   # Crop, making sure it also includes grid cells, which center is outside the polygon
   # by adding snap = "out")
-  gmia_temp <- crop(gmia_raw, adm_loc, snap = "out")
+  gmia_temp <- crop(gmia_raw, adm_map, snap = "out")
   
   # Set 0 values to NA
   gmia_temp <- reclassify(gmia_temp, cbind(0, NA))
@@ -104,18 +91,18 @@ if(param$res == "30sec") {
   
   # Save
   writeRaster(gmia_temp, file.path(param$spam_path, 
-    glue("processed_data/maps/irrigated_area/gmia_temp_{param$year}_{param$iso3c}.tif")),
+    glue("processed_data/maps/irrigated_area/{param$res}/gmia_temp_{param$year}_{param$iso3c}.tif")),
     overwrite = T)
   
   # Set files
   grid <- file.path(param$spam_path,
-    glue("processed_data/maps/grid/grid_{param$res}_{param$year}_{param$iso3c}.tif"))
+    glue("processed_data/maps/grid/{param$res}/grid_{param$res}_{param$year}_{param$iso3c}.tif"))
   mask <- file.path(param$spam_path,
-    glue("processed_data/maps/adm/adm_loc_{param$year}_{param$iso3c}.shp"))
+    glue("processed_data/maps/adm/{param$res}/adm_map_{param$year}_{param$iso3c}.shp"))
   input <- file.path(param$spam_path,
-    glue("processed_data/maps/irrigated_area/gmia_temp_{param$year}_{param$iso3c}.tif"))
+    glue("processed_data/maps/irrigated_area/{param$res}/gmia_temp_{param$year}_{param$iso3c}.tif"))
   output <- file.path(param$spam_path,
-    glue("processed_data/maps/irrigated_area/gmia_{param$res}_{param$year}_{param$iso3c}.tif"))
+    glue("processed_data/maps/irrigated_area/{param$res}/gmia_{param$res}_{param$year}_{param$iso3c}.tif"))
   
   # Warp and mask
   output_map <- align_rasters(unaligned = input, reference = grid, dstfile = output,

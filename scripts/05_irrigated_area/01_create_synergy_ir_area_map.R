@@ -5,20 +5,8 @@
 #' Contact:  michiel.vandijk@wur.nl
 #'========================================================================================================================================
 
-############### SET UP ###############
-# Install and load pacman package that automatically installs R packages if not available
-if("pacman" %in% rownames(installed.packages()) == FALSE) install.packages("pacman")
-library(pacman)
-
-# Load key packages
-p_load("mapspam2globiom", "tidyverse", "readxl", "stringr", "here", "scales", "glue", "sf", "raster")
-
-# Set root
-root <- here()
-
-# R options
-options(scipen=999) # Supress scientific notation
-options(digits=4) # limit display to four digits
+############### SOURCE PARAMETERS ###############
+source(here::here("scripts/01_model_setup/01_model_setup.r"))
 
 ############### LOAD DATA
 # Load data
@@ -79,11 +67,14 @@ plot(adm_map$geometry, add = T)
 
 
 ############### SAVE ###############
-writeRaster(ir_max_map, file.path(param$spam_path, 
-  glue("processed_data/maps/irrigated_area/ia_max_{param$res}_{param$year}_{param$iso3c}.tif")),overwrite = T)
+temp_path <- file.path(param$spam_path, glue("processed_data/maps/irrigated_area/{param$res}"))
+dir.create(temp_path, showWarnings = FALSE, recursive = TRUE)
 
-writeRaster(ir_rank_map, file.path(param$spam_path, 
-  glue("processed_data/maps/irrigated_area/ia_rank_{param$res}_{param$year}_{param$iso3c}.tif")),overwrite = T)
+writeRaster(ir_max_map, file.path(temp_path,
+                                  glue::glue("ia_max_{param$res}_{param$year}_{param$iso3c}.tif")),overwrite = T)
+
+writeRaster(ir_rank_map, file.path(temp_path, 
+                                  glue::glue("ia_rank_{param$res}_{param$year}_{param$iso3c}.tif")),overwrite = T)
 
 ############### CLEAN UP ###############
 rm(adm_map, gia, gmia, grid, grid_df, grid_size, id_df, ir_max_map, ir_rank_map)

@@ -1,28 +1,12 @@
 #'========================================================================================================================================
-#' Project:  mapspam
+#' Project:  mapspam2globiom
 #' Subject:  Code to process population maps
 #' Author:   Michiel van Dijk
 #' Contact:  michiel.vandijk@wur.nl
 #'========================================================================================================================================
 
-############### MESSAGE ###############
-message("\nRunning 03_spatial_data\\06_select_worldpop.r")
-
-
-############### SET UP ###############
-# Install and load pacman package that automatically installs R packages if not available
-if("pacman" %in% rownames(installed.packages()) == FALSE) install.packages("pacman")
-library(pacman)
-
-# Load key packages
-p_load("mapspam2globiom", "tidyverse", "readxl", "stringr", "here", "scales", "glue", "gdalUtils", "sf", "raster")
-
-# Set root
-root <- here()
-
-# R options
-options(scipen=999) # Supress scientific notation
-options(digits=4) # limit display to four digits
+############### SOURCE PARAMETERS ###############
+source(here::here("scripts/01_model_setup/01_model_setup.r"))
 
 
 ############### PROCESS ###############
@@ -32,14 +16,17 @@ options(digits=4) # limit display to four digits
 # the average option and multiple by 100, the number of 30sec grid cells in 5 arcmin.
 
 grid <- file.path(param$spam_path,
-                  glue("processed_data/maps/grid/grid_{param$res}_{param$year}_{param$iso3c}.tif"))
+                  glue("processed_data/maps/grid/{param$res}/grid_{param$res}_{param$year}_{param$iso3c}.tif"))
 mask <- file.path(param$spam_path,
-                  glue("processed_data/maps/adm/adm_map_{param$year}_{param$iso3c}.shp"))
+                  glue("processed_data/maps/adm/{param$res}/adm_map_{param$year}_{param$iso3c}.shp"))
 input <- file.path(param$raw_path, "worldpop/ppp_2010_1km_Aggregated.tif")
 output <- file.path(param$spam_path,
-                    glue("processed_data/maps/population/pop_{param$res}_{param$year}_{param$iso3c}.tif"))
+                    glue("processed_data/maps/population/{param$res}/pop_{param$res}_{param$year}_{param$iso3c}.tif"))
 
 if(param$res == "30sec") {
+  
+  temp_path <- file.path(param$spam_path, glue("processed_data/maps/population/{param$res}"))
+  dir.create(temp_path, showWarnings = FALSE, recursive = TRUE)
   
   # Warp and mask
   output_map <- align_rasters(unaligned = input, reference = grid, dstfile = output,
@@ -49,6 +36,9 @@ if(param$res == "30sec") {
 }
 
 if(param$res == "5min") {
+  
+  temp_path <- file.path(param$spam_path, glue("processed_data/maps/population/{param$res}"))
+  dir.create(temp_path, showWarnings = FALSE, recursive = TRUE)
   
   # Warp and mask
   worldpop_temp <- align_rasters(unaligned = input, reference = grid, dstfile = output,
@@ -61,15 +51,11 @@ if(param$res == "5min") {
   
   # Overwrite
   writeRaster(worldpop_temp, file.path(param$spam_path,
-    glue("processed_data/maps/population/pop_{param$res}_{param$year}_{param$iso3c}.tif")), 
+    glue("processed_data/maps/population/{param$res}/pop_{param$res}_{param$year}_{param$iso3c}.tif")), 
     overwrite = T)
 }
 
 
 ############### CLEAN UP ###############
 rm(grid, input, mask, output, output_map)
-
-
-############### MESSAGE ###############
-message("Complete")
 

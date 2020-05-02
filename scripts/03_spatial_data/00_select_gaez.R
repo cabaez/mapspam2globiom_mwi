@@ -5,36 +5,13 @@
 #' Contact:  michiel.vandijk@wur.nl
 #'========================================================================================================================================
 
-############### MESSAGE ###############
-message("\nRunning 03_spatial_data\\04_select_gaez.r")
-
-
-############### SET UP ###############
-# Install and load pacman package that automatically installs R packages if not available
-if("pacman" %in% rownames(installed.packages()) == FALSE) install.packages("pacman")
-library(pacman)
-
-
-# Load key packages
-p_load("mapspam2globiom", "tidyverse", "readxl", "stringr", "here", "scales", "glue", "gdalUtils", "sf", "raster")
-
-# Set root
-root <- here()
-
-# R options
-options(scipen=999) # Supress scientific notation
-options(digits=4) # limit display to four digits
+############### SOURCE PARAMETERS ###############
+source(here::here("scripts/01_model_setup/01_model_setup.r"))
 
 
 ########## LOAD DATA ##########
-# Adm location
-adm_map <- readRDS(file.path(param$spam_path,
-                         glue("processed_data/maps/adm/adm_map_{param$year}_{param$iso3c}.rds")))
+load_data(c("adm_map", "grid"), param)
 
-# Grid
-grid <- raster(file.path(param$spam_path,
-          glue("processed_data/maps/grid/grid_{param$res}_{param$year}_{param$iso3c}.tif")))
-names(grid) <- "gridID"
 
 # gaez2crop
 # As some gaez maps are not available (see Convert_GAEZ_too_Suit_v4.docx, we need a specific mapping).
@@ -61,16 +38,19 @@ lookup <- bind_rows(
 ### WARP AND MASK
 # Set files
 grid <- file.path(param$spam_path,
-                  glue("processed_data/maps/grid/grid_{param$res}_{param$year}_{param$iso3c}.tif"))
+                  glue("processed_data/maps/grid/{param$res}/grid_{param$res}_{param$year}_{param$iso3c}.tif"))
 mask <- file.path(param$spam_path,
-                  glue("processed_data/maps/adm/adm_map_{param$year}_{param$iso3c}.shp"))
+                  glue("processed_data/maps/adm/{param$res}/adm_map_{param$year}_{param$iso3c}.shp"))
+
 
 # Function to loop over gaez files, warp and mask
 clip_gaez <- function(id, var, folder){
   print(id)
+  temp_path <- file.path(param$spam_path, glue("processed_data/maps/{folder}/{param$res}"))
+  dir.create(temp_path, showWarnings = FALSE, recursive = TRUE)
   input <- lookup$files_full[lookup$id == id]
-  output <- file.path(param$spam_path,
-                      glue("processed_data/maps/{folder}/{id}_{var}_{param$res}_{param$year}_{param$iso3c}.tif"))
+  output <- file.path(temp_path,
+                      glue("{id}_{var}_{param$res}_{param$year}_{param$iso3c}.tif"))
   output_map <- align_rasters(unaligned = input, reference = grid, dstfile = output,
                               cutline = mask, crop_to_cutline = F, 
                               r = "bilinear", verbose = F, output_Raster = T, overwrite = T)
@@ -110,5 +90,3 @@ rm(files1, files2, lookup)
 rm(adm_loc, gaez2crop, grid, mask)
 rm(clip_gaez)
 
-############### MESSAGE ###############
-message("Complete")

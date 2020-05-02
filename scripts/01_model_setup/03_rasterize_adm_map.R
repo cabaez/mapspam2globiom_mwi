@@ -6,7 +6,7 @@
 #'========================================================================================================================================
 
 ############### SOURCE PARAMETERS ###############
-source(here("scripts/ALL/01_model_setup.r"))
+source(here::here("scripts/01_model_setup/01_model_setup.r"))
 
 
 ############### LOAD DATA ###############
@@ -45,13 +45,11 @@ adm_map_r <- as.data.frame(rasterToPoints(adm_map_r)) %>%
 
 ############### SAVE ###############
 # Save
-saveRDS(adm_map_r, file.path(param$spam_path,
-  glue("processed_data/maps/adm/adm_map_r_{param$res}_{param$year}_{param$iso3c}.rds")))
+temp_path <- file.path(param$spam_path, glue("processed_data/maps/adm/{param$res}"))
+dir.create(temp_path, showWarnings = FALSE, recursive = TRUE)
+saveRDS(adm_map_r, file.path(temp_path,
+  glue("adm_map_r_{param$res}_{param$year}_{param$iso3c}.rds")))
 
 
 ############### CLEAN UP ###############
-rm(grid, adm_r, adm_df, adm_map, adm_map_r)
-
-
-############### MESSAGE ###############
-message("Complete")
+rm(grid, adm_df, adm_map, adm_map_r)

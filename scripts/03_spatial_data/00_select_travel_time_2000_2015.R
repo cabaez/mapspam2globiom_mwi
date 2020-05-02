@@ -5,34 +5,22 @@
 #' Contact:  michiel.vandijk@wur.nl
 #'========================================================================================================================================
 
-############### MESSAGE ###############
-message("\nRunning 03_spatial_data\\05_select_travel_time_2000_2015.r")
-
-
-############### SET UP ###############
-# Install and load pacman package that automatically installs R packages if not available
-if("pacman" %in% rownames(installed.packages()) == FALSE) install.packages("pacman")
-library(pacman)
-
-# Load key packages
-p_load("mapspam2globiom", "tidyverse", "readxl", "stringr", "here", "scales", "glue", "gdalUtils", "sf", "raster")
-
-# Set root
-root <- here()
-
-# R options
-options(scipen=999) # Supress scientific notation
-options(digits=4) # limit display to four digits
+############### SOURCE PARAMETERS ###############
+source(here::here("scripts/01_model_setup/01_model_setup.r"))
 
 
 ############### PROCESS ###############
+temp_path <- file.path(param$spam_path, glue("processed_data/maps/accessibility/{param$res}"))
+dir.create(temp_path, showWarnings = FALSE, recursive = TRUE)
+
+
 # Set files
 grid <- file.path(param$spam_path,
-                  glue("processed_data/maps/grid/grid_{param$res}_{param$year}_{param$iso3c}.tif"))
+                  glue("processed_data/maps/grid/{param$res}/grid_{param$res}_{param$year}_{param$iso3c}.tif"))
 mask <- file.path(param$spam_path,
-                  glue("processed_data/maps/adm/adm_map_{param$year}_{param$iso3c}.shp"))
+                  glue("processed_data/maps/adm/{param$res}/adm_map_{param$year}_{param$iso3c}.shp"))
 output <- file.path(param$spam_path,
-                    glue("processed_data/maps/accessibility/acc_{param$res}_{param$year}_{param$iso3c}.tif"))
+                    glue("processed_data/maps/accessibility/{param$res}/acc_{param$res}_{param$year}_{param$iso3c}.tif"))
 
 # There are two products, one for around 2000 and one for around 2015, we select on the basis of reference year
 if (param$year <= 2007){
@@ -50,7 +38,3 @@ plot(output_map)
 
 ############### CLEAN UP ###############
 rm(input, mask, output, grid, output_map)
-
-
-############### MESSAGE ###############
-message("Complete")
