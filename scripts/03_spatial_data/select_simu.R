@@ -13,12 +13,17 @@ source(here::here("scripts/01_model_setup/01_model_setup.r"))
 # simu global map
 simu_global <- st_read(file.path(param$raw_path, "Simu/simu_global.shp"))
 
+# Simu area
+simu_area <- read_csv(file.path(param$raw_path, "simu/simu_area.csv"))
+
 load_data("grid", param)
 
+
 ############### PROCESS ###############
-# select country simu
+# select country simu and add area info
 simu <- simu_global %>%
-  filter(COUNTRY == param$iso3n)
+  filter(COUNTRY == param$iso3n) %>%
+  left_join(simu_area)
 plot(simu$geometry)
 
 # rasterize

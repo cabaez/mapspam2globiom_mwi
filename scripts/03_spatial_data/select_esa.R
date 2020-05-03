@@ -15,15 +15,12 @@ dir.create(temp_path, showWarnings = FALSE, recursive = TRUE)
 
 
 # Set files
-grid <- file.path(param$spam_path,
-                  glue("processed_data/maps/grid/{param$res}/grid_{param$res}_{param$year}_{param$iso3c}.tif"))
 mask <- file.path(param$spam_path,
                   glue("processed_data/maps/adm/{param$res}/adm_map_{param$year}_{param$iso3c}.shp"))
 input <- file.path(param$raw_path,
                     glue("esacci/ESACCI-LC-L4-LCCS-Map-300m-P1Y-2010-v2.0.7.tif"))
 output <- file.path(param$spam_path,
                     glue("processed_data/maps/cropland/{param$res}/esa_raw_{param$year}_{param$iso3c}.tif"))
-
 
 # Warp and mask
 esa <- gdalwarp(cutline =input_shp, crop_to_cutline = T, srcfile = input, dstfile = output, verbose = T, output_Raster = T, overwrite = T)
