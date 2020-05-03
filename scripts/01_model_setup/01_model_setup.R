@@ -11,7 +11,7 @@ if("pacman" %in% rownames(installed.packages()) == FALSE) install.packages("pacm
 library(pacman)
 
 # Load key packages
-p_load("mapspam2globiom", "here", "glue", "raster", "readxl", "tidyverse", "sf")
+p_load("mapspam2globiom", "here", "gdalUtils", "glue", "raster", "readxl", "tidyverse", "sf")
 
 # R options
 options(scipen=999) # Supress scientific notation

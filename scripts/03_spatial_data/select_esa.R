@@ -1,51 +1,38 @@
 #'========================================================================================================================================
-#' Project:  crop_map
+#' Project:  mapspam2globiom
 #' Subject:  Code to select ESA land cover map per country
 #' Author:   Michiel van Dijk
 #' Contact:  michiel.vandijk@wur.nl
 #'========================================================================================================================================
 
-### PACKAGES
-if(!require(pacman)) install.packages("pacman")
-# Key packages
-p_load("tidyverse", "readxl", "stringr", "scales", "RColorBrewer", "rprojroot")
-# Spatial packages
-p_load("rgdal", "ggmap", "raster", "rasterVis", "rgeos", "sp", "mapproj", "maptools", "proj4", "gdalUtils")
-# Additional packages
-p_load("WDI", "countrycode", "plotKML", "sf")
+############### SOURCE PARAMETERS ###############
+source(here::here("scripts/01_model_setup/01_model_setup.r"))
 
 
-### SET ROOT AND WORKING DIRECTORY
-root <- find_root(is_rstudio_project)
+############### PROCESS ###############
+temp_path <- file.path(param$spam_path, glue("processed_data/maps/cropland/{param$res}"))
+dir.create(temp_path, showWarnings = FALSE, recursive = TRUE)
 
 
-### R SETTINGS
-options(scipen=999) # surpress scientific notation
-options("stringsAsFactors"=FALSE) # ensures that characterdata that is loaded (e.g. csv) is not turned into factors
-options(digits=4)
+# Set files
+grid <- file.path(param$spam_path,
+                  glue("processed_data/maps/grid/{param$res}/grid_{param$res}_{param$year}_{param$iso3c}.tif"))
+mask <- file.path(param$spam_path,
+                  glue("processed_data/maps/adm/{param$res}/adm_map_{param$year}_{param$iso3c}.shp"))
+input <- file.path(param$raw_path,
+                    glue("esacci/ESACCI-LC-L4-LCCS-Map-300m-P1Y-2010-v2.0.7.tif"))
+output <- file.path(param$spam_path,
+                    glue("processed_data/maps/cropland/{param$res}/esa_raw_{param$year}_{param$iso3c}.tif"))
 
 
-### SOURCE FUNCTIONS
-source(file.path(root, "Code/general/support_functions.r"))
-
-
-### LOAD DATA
-# adm
-adm <- readRDS(file.path(proc_path, paste0("maps/adm/adm_", year_sel, "_", iso3c_sel, ".rds")))
-
-
-### TO_UPDATE: turn this into a function
-### CLIP COUNTRY
-temp_path <- file.path(proc_path, paste0("maps/esa"))
-dir.create(temp_path, recursive = T, showWarnings = F)
-
-input <-file.path(glob_path, paste0("ESA/ESACCI-LC-L4-LCCS-Map-300m-P1Y-", year_sel, "-v2.0.7.tif"))
-input_shp <- file.path(proc_path, paste0("maps/adm/adm_", year_sel, "_", iso3c_sel, ".shp"))
-output <- file.path(temp_path, paste0("esa_raw_", year_sel, "_", iso3c_sel, ".tif"))
-
-message("Clip esa map")
+# Warp and mask
 esa <- gdalwarp(cutline =input_shp, crop_to_cutline = T, srcfile = input, dstfile = output, verbose = T, output_Raster = T, overwrite = T)
 
+output_map <- gdalwarp(srcfile = input, dstfile = output,
+                            cutline = mask, crop_to_cutline = T, srcnodata = "0",
+                            r = "near", verbose = F, output_Raster = T, overwrite = T)
+plot(output_map)
 
-### CLEAN UP
-rm(temp_path, input, input_shp, output, esa, adm)
+
+############### CLEAN UP ###############
+rm(input, mask, output, grid, output_map)

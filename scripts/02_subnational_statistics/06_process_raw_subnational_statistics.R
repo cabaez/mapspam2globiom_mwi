@@ -10,10 +10,6 @@ source(here::here("scripts/01_model_setup/01_model_setup.r"))
 
 
 ############### LOAD DATA ###############
-# ifpri2crop
-crop_orig2crop <- read_excel(file.path(param$spam_path,
-                                       "parameters/mappings_spam.xlsx"), sheet = "crop_orig2crop")
-
 # adm statistics
 stat_raw <- read_csv(file.path(param$raw_path,
                                glue("subnational_statistics/subnational_harvested_area_{param$year}_{param$iso3c}.csv")))

@@ -1,5 +1,5 @@
 #'========================================================================================================================================
-#' Project:  mapspam
+#' Project:  mapspam2globiom
 #' Subject:  Code to process GIA
 #' Author:   Michiel van Dijk
 #' Contact:  michiel.vandijk@wur.nl
