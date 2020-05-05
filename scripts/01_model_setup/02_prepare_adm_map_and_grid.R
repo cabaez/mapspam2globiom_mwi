@@ -10,7 +10,7 @@ source(here::here("scripts/01_model_setup/01_model_setup.r"))
 
 
 ############### LOAD DATA ###############
-# set name file
+# replace the name of the shapefile with that of your own country.
 iso3c_shp <- "adm_2010_MWI.shp"
 
 # load shapefile
@@ -78,7 +78,7 @@ plot(adm_map$geometry, main = "ADM all polygons")
 adm1_to_remove <- c("Area under National Administration")
 adm2_to_remove <- c("Likoma")
 
-# Remove ADM1s
+# Remove ADMs
 adm_map <- adm_map %>%
   filter(adm1_name != adm1_to_remove) %>%
   filter(adm2_name != adm2_to_remove)
@@ -86,27 +86,20 @@ adm_map <- adm_map %>%
 plot(adm_map$geometry, main = "ADM polygons removed")
 par(mfrow=c(1,1))
 
+# Create pdf with the location of administrative units
+create_adm_map_pdf(param)
+
 # Create adm_list
-adm_list <- adm_map %>%
-  as.data.frame() %>%
-  dplyr::select(-geometry)
+create_adm_list(adm_map, param)  
 
 
 ############### SAVE ###############
-# Save adm_list
-write_csv(adm_list, file.path(param$spam_path, glue("processed_data/lists/adm_list_{param$year}_{param$iso3c}.csv")))
-
 # Save adm maps
 temp_path <- file.path(param$spam_path, glue("processed_data/maps/adm/{param$res}"))
 dir.create(temp_path, showWarnings = FALSE, recursive = TRUE)
 
 saveRDS(adm_map, file.path(temp_path, glue("adm_map_{param$year}_{param$iso3c}.rds")))
 write_sf(adm_map, file.path(temp_path, glue("adm_map_{param$year}_{param$iso3c}.shp")))
-
-
-
-############### CREATE PDF WITH ADM LOCATIONS ###############
-create_adm_map_pdf(param)
 
 
 ############### CREATE GRID ###############

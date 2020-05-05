@@ -8,6 +8,11 @@ output: html_document
 KEY!!
 Overlay of grid and acc shows that the extent is the same BUT actual selected cells are different on the edges (5 arcmin grid)!!! This means that allign rasters in combination with cutline does not select the same cells> Probably easiest solution is to use gdal to create the raster....perhaps create (1) create raster of ALL cellS touched by polygon and then run gdal...
 
+
+# Finish documentation and functions
+- load_data and add functions that load the data instead of repeating code.
+
+
 - Check why there is an indication of ir slack when harmonizing at adm1_level in MWI.
 - Check: with present data adm_art_map has art_adms that are approximately zero. This should not happen if the rebalancing would be succesful. Added code to remove them in combine model input to remove them!
 - check where to store all the mappings files. On the one hand we should store the in the package on the other hand we should provide a way to update them.

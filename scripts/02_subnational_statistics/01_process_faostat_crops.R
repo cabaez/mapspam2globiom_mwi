@@ -10,7 +10,7 @@ source(here::here("scripts/01_model_setup/01_model_setup.r"))
 
 
 ############### LOAD DATA ###############
-# Set FAOSTAT versions
+# Set FAOSTAT version
 faostat_crops_version <- "20200303"
 
 # Crop production
@@ -18,13 +18,15 @@ prod <- read_csv(file.path(param$raw_path,
   glue("faostat/{faostat_crops_version}_faostat_crops.csv")))
 
 # faostat2crop
-faostat2crop <- read_excel(file.path(param$spam_path,
-  "parameters/mappings_spam.xlsx"), sheet = "faostat2crop") %>%
-  dplyr::select(crop, faostat_crop_code) %>%
-  na.omit()
+load_data("faostat2crop", param)
 
 
 ############### PROCESS ###############
+# faostat2crop
+faostat2crop <- faostat2crop %>%
+  dplyr::select(crop, faostat_crop_code) %>%
+  na.omit()
+
 # Extract harvested area data
 area <- prod %>%
   filter(`Area Code` == param$fao_code, Element ==  "Area harvested", Unit == "ha") %>%

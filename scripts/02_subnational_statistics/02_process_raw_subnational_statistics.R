@@ -12,15 +12,14 @@ source(here::here("scripts/01_model_setup/01_model_setup.r"))
 ############### LOAD DATA ###############
 # adm statistics
 stat_raw <- read_csv(file.path(param$raw_path,
-                               glue("subnational_statistics/subnational_harvested_area_{param$year}_{param$iso3c}.csv")))
+  glue("subnational_statistics/subnational_harvested_area_{param$year}_{param$iso3c}.csv")))
 
-# adm_map_list
-adm_list <- read_csv(file.path(param$spam_path,
-                               glue("processed_data/lists/adm_list_{param$year}_{param$iso3c}.csv")))
+# adm_list
+load_data("adm_list", param)
 
 # faostat
 fao_raw <- read_csv(file.path(param$spam_path,
-                              glue("processed_data/agricultural_statistics/faostat_crops_{param$year}_{param$iso3c}.csv")))
+  glue("processed_data/agricultural_statistics/faostat_crops_{param$year}_{param$iso3c}.csv")))
 
 
 ############### PROCESS STATISTICS ###############
