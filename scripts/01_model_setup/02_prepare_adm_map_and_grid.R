@@ -91,12 +91,6 @@ adm_list <- adm_map %>%
   as.data.frame() %>%
   dplyr::select(-geometry)
 
-# For processing of the irrigation maps we need a shapefile of the country
-# polygon in the WSG84 crs. This is default but will change, when the user sets
-# a different crs.
-adm_map_wsg84 <- adm_map %>%
-  st_transform(crs = "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")
-
 
 ############### SAVE ###############
 # Save adm_list
@@ -108,13 +102,20 @@ dir.create(temp_path, showWarnings = FALSE, recursive = TRUE)
 
 saveRDS(adm_map, file.path(temp_path, glue("adm_map_{param$year}_{param$iso3c}.rds")))
 write_sf(adm_map, file.path(temp_path, glue("adm_map_{param$year}_{param$iso3c}.shp")))
-write_sf(adm_map_wsg84, file.path(temp_path, glue("adm_map_wsg_84_{param$year}_{param$iso3c}.shp")))
+
+
+
+############### CREATE PDF WITH ADM LOCATIONS ###############
+create_adm_map_pdf(param)
 
 
 ############### CREATE GRID ###############
 create_grid(param)
 
 
+############### RASTERIZE ADM_MAP ###############
+rasterize_adm_map(param)
+
+
 ############### CLEAN UP ###############
-rm(adm_map, adm_map_raw, adm_map_wsg84, adm_list, adm0_code_orig, adm0_name_orig, adm1_code_orig, adm1_name_orig,
-   adm2_code_orig, adm2_name_orig, adm1_to_remove, adm2_to_remove, iso3c_shp)
+

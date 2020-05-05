@@ -10,17 +10,21 @@ source(here::here("scripts/01_model_setup/01_model_setup.r"))
 
 
 ############### CREATE GLOBIOM INPUT GDX FILES ###############
-# We take the ESACCI landcover map
+# We use the ESACCI land cover map as land cover base map. 
+# The user can replace this by a country specific product if available.
+# If so, a new land_cover2globiom land cover class has to be procuced and loaded
+# that substitues the esacci2globiom mapping.
+
 lc_file <- file.path(param$spam_path,
                               glue("processed_data/maps/cropland/{param$res}/esa_raw_{param$year}_{param$iso3c}.tif"))
 lc_map <- raster(lc_file)
 plot(lc_map)
 
 # Load mapping of lc classes to globiom lc classes
-esacci2globiom<- read_excel(file.path(param$spam_path, 
+lc_class2globiom <- read_excel(file.path(param$spam_path, 
                                      "parameters/mappings_spam.xlsx"), sheet = "esacci2globiom")
 
 
 # Aggregate land cover map to GLOBIOM land cover classes at simu level
 # Not that the area is expressed in 1000 ha, which is common in GLOBIOM!
-create_globiom_input(esacci2globiom, lc_map, param)
+create_globiom_input(lc_class2globiom, lc_map, param)

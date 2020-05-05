@@ -23,9 +23,6 @@ options(digits=4) # limit display to four digits
 # Note that R uses forward slashes even in Windows!!
 spamc_path <- "C:/Users/dijk158/Dropbox/mapspam2globiom_mwi"
 
-# Create SPAMc folder structure in the spamc_path
-create_spam_folders(spamc_path)
-
 # Set SPAMc parameters
 param <- spam_par(spam_path = spamc_path,
                          iso3c = "MWI",
@@ -37,4 +34,7 @@ param <- spam_par(spam_path = spamc_path,
 
 # Show parameters
 print(param)
+
+# Create SPAMc folder structure in the spamc_path
+create_spam_folders(param)
 
