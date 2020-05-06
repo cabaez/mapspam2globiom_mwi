@@ -5,6 +5,12 @@
 #' Contact:  michiel.vandijk@wur.nl
 #'========================================================================================================================================
 
+############### NOTE ###############
+# This script below is sourced by all the other scripts in the data repository.
+# In this way, you only have to set the SPAMc parameters once.
+# It also ensures that the necessary packages (see below) are loaded.
+
+
 ############### SETUP R ###############
 # Install and load pacman package that automatically installs R packages if not available
 if("pacman" %in% rownames(installed.packages()) == FALSE) install.packages("pacman")
@@ -12,6 +18,9 @@ library(pacman)
 
 # Load key packages
 p_load("mapspam2globiom", "here", "gdalUtils", "glue", "raster", "readxl", "tidyverse", "sf")
+
+# !diagnostics off
+# This switches off most warnings related to "Unknown or uninitialised column: ", which can be safely ignored.
 
 # R options
 options(scipen=999) # Supress scientific notation

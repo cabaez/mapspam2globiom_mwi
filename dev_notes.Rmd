@@ -8,9 +8,12 @@ output: html_document
 KEY!!
 Overlay of grid and acc shows that the extent is the same BUT actual selected cells are different on the edges (5 arcmin grid)!!! This means that allign rasters in combination with cutline does not select the same cells> Probably easiest solution is to use gdal to create the raster....perhaps create (1) create raster of ALL cellS touched by polygon and then run gdal...
 
+- need to illustrate the case when no subnational statistics are available. 
+
 
 # Finish documentation and functions
 - load_data and add functions that load the data instead of repeating code.
+- make create_adm_template more general by looping over adm levels
 
 
 - Check why there is an indication of ir slack when harmonizing at adm1_level in MWI.
@@ -111,6 +114,7 @@ Set is.na(ADM2) to 0.
 # And has passed a number of checks so it is always consistent. 
 CHECK that need to be added: When running solve_level = 1, if data is complete at that level, i.e. if data is available for all crops at ADM1 level!
 
+- CHeck if crop names are all in SPAM crop list csv file!
 
 # Scaling to FAOSTAT. 
 We do not scale if there are missing values and sum(ADM1)<faostat. Here the same rule should be applied. If the sum is very close to FAOSTAT, missing values should be set to 0. 
