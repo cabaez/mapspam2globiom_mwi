@@ -58,12 +58,16 @@ ha_df <- ha_df %>%
 ha_df <- ha_df %>%
   mutate(ha = round(ha, 0))
 
+# Check if the statistics add up and show where this is not the case
+check_statistics(ha_df, param, out = T)
+
 # Make sure the totals at higher levels are the same as subtotals
 # We start at the lowest level, assuming lower levels are preferred if more than one level
 # of data is available and data is complete.
-# TOADD. In case of inconsistencies: incomplete data at lower level but with a higher subtotal,
-# data is also replaced and all data with NA at the lower level is set to 0.
-ha_df <- rebalance_stat(ha_df, param)
+ha_df <- rebalance_statistics(ha_df, param)
+
+# Check again
+check_statistics(ha_df, param, out = T)
 
 
 ########## HARMONIZE HA WITH FAOSTAT ##########
