@@ -8,6 +8,7 @@
 ############### SOURCE PARAMETERS ###############
 source(here::here("scripts/01_model_setup/01_model_setup.r"))
 
+
 ############### LOAD DATA
 # Load data
 load_data(c("adm_map", "grid", "gmia", "gia"), param)
@@ -22,7 +23,8 @@ names(grid_size) <- "grid_size"
 # Grid df
 grid_df <- as.data.frame(rasterToPoints(grid))
   
-# Create df of gia. Remove values < 0.01, most of which are probably caused by reprojecting the maps
+# Create id_df, combining gia and gmia. Remove values < 0.01, most of which are
+# probably caused by reprojecting the maps
 ir_df <-   as.data.frame(rasterToPoints(stack(grid, grid_size, gmia, gia))) %>%
   filter(!is.na(gridID)) %>%
   dplyr::select(-x, -y) %>%

@@ -9,30 +9,13 @@
 source(here::here("scripts/01_model_setup/01_model_setup.r"))
 
 
-############### HARMONIZE INPUT DATA ###############
-harmonize_inputs(param)
-
-
-############### PREPARE BIOPHYSICAL SUITABILITY AND POTENTIAL YIELD ###############
-prepare_bs_yg("biophysical_suitability", param)
-prepare_bs_yg("potential_yield", param)
-
-
-############### PREPARE SCORE ###############
-prepare_score(param)
-
-
-############### COMBINE MODEL INPUTS ###############
-combine_inputs(param)
-
-
 ############### RUN MODEL ###############
 run_spam(param)
 
 
-############### PREPARE RESULTS ###############
-harvest_results(param)
+############### COMBINE ADM1 RESULTS ###############
+combine_results(param)
 
 
-############### PREPARE RESULTS ###############
+############### CREATE TIF ###############
 create_all_tif(param)
