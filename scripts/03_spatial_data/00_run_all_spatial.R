@@ -28,7 +28,7 @@ source(here::here("scripts/03_spatial_data/select_travel_time_2000_2015.r"))
 
 
 ############### POPULATION ###############
-source(here::here("scripts/03_spatial_data/worldpop.r"))
+source(here::here("scripts/03_spatial_data/select_worldpop.r"))
 source(here::here("scripts/03_spatial_data/select_urban_extent.r"))
 
 

@@ -77,4 +77,4 @@ writeRaster(ir_rank_map, file.path(temp_path,
                                   glue::glue("ia_rank_{param$res}_{param$year}_{param$iso3c}.tif")),overwrite = T)
 
 ############### CLEAN UP ###############
-rm(adm_map, gia, gmia, grid, grid_df, grid_size, id_df, ir_df, ir_max_map, ir_rank_map, temp_path)
+rm(adm_map, gia, gmia, grid, grid_df, grid_size, ir_df, ir_max_map, ir_rank_map, temp_path)
