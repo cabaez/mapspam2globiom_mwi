@@ -78,6 +78,10 @@ if(param$res == "5min") {
   }
 
 if(param$res == "30sec") {
+  
+  temp_path <- file.path(param$spam_path, glue("processed_data/maps/irrigated_area/{param$res}"))
+  dir.create(temp_path, showWarnings = FALSE, recursive = TRUE)
+  
   # Crop, making sure it also includes grid cells, which center is outside the polygon
   # by adding snap = "out")
   gmia_temp <- crop(gmia_raw, adm_map, snap = "out")

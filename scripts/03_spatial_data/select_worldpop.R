@@ -10,16 +10,19 @@ source(here::here("scripts/01_model_setup/01_model_setup.r"))
 
 
 ############### PROCESS ###############
-# Worldpop presents population density per #grid cell (in this case 30 arcsec,
+# WorldPop presents population density per #grid cell (in this case 30 arcsec,
 # the resolution of the map). 
 # In order to use the map at higher resolutions (e.g. 5 arcmin) we need to resample using
 # the average option and multiple by 100, the number of 30sec grid cells in 5 arcmin.
+
+# NOTE: the WorldPop input file is conditional on the year. So make sure you
+# download the map for the year set in param!
 
 grid <- file.path(param$spam_path,
                   glue("processed_data/maps/grid/{param$res}/grid_{param$res}_{param$year}_{param$iso3c}.tif"))
 mask <- file.path(param$spam_path,
                   glue("processed_data/maps/adm/{param$res}/adm_map_{param$year}_{param$iso3c}.shp"))
-input <- file.path(param$raw_path, "worldpop/ppp_2010_1km_Aggregated.tif")
+input <- file.path(param$raw_path, glue("worldpop/ppp_{param$year}_1km_Aggregated.tif"))
 output <- file.path(param$spam_path,
                     glue("processed_data/maps/population/{param$res}/pop_{param$res}_{param$year}_{param$iso3c}.tif"))
 

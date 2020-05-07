@@ -83,7 +83,6 @@ walk(lookup$id, clip_gaez, "py", "potential_yield")
 
 
 ############### CLEAN UP  ###############
-rm(files1, files2, lookup)
 rm(adm_loc, gaez2crop, grid, mask)
 rm(clip_gaez, gaez2crop, lookup)
 
