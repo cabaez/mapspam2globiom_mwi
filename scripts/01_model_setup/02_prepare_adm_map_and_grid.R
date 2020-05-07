@@ -86,9 +86,6 @@ adm_map <- adm_map %>%
 plot(adm_map$geometry, main = "ADM polygons removed")
 par(mfrow=c(1,1))
 
-# Create pdf with the location of administrative units
-create_adm_map_pdf(param)
-
 # Create adm_list
 create_adm_list(adm_map, param)  
 
@@ -100,6 +97,11 @@ dir.create(temp_path, showWarnings = FALSE, recursive = TRUE)
 
 saveRDS(adm_map, file.path(temp_path, glue("adm_map_{param$year}_{param$iso3c}.rds")))
 write_sf(adm_map, file.path(temp_path, glue("adm_map_{param$year}_{param$iso3c}.shp")))
+
+
+############### CREATE PDF ###############
+# Create pdf with the location of administrative units
+create_adm_map_pdf(param)
 
 
 ############### CREATE GRID ###############
