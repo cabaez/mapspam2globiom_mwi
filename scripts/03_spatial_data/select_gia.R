@@ -90,4 +90,4 @@ if(param$res == "5min"){
 }
 
 ############### CLEAN UP ###############
-rm(gia, gia_raw, gia_temp)
+rm(gia_raw, gia_temp, input, grid, mask, output, temp_path)

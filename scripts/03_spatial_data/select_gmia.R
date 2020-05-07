@@ -113,9 +113,6 @@ if(param$res == "30sec") {
 
 
 ############### CLEAN UP ###############
-rm(adm_loc, gmia_raw, gmia_temp)
-
-
-############### MESSAGE ###############
-message("Complete")
+rm(adm_map, gmia_raw, gmia_temp, output_map)
+rm(grid, input, mask, output, temp_path)
 

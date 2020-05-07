@@ -33,6 +33,6 @@ saveRDS(grump, file.path(param$spam_path, glue("processed_data/maps/population/{
 
 
 ############### CLEAN UP ###############
-rm(temp_path, adm_map, grump, grump_raw)
+rm(adm_map, grump, grump_raw, temp_path)
 
 

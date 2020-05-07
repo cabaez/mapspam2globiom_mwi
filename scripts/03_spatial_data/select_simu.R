@@ -40,7 +40,7 @@ writeRaster(simu_r, file.path(temp_path, glue::glue("simu_r_{param$res}_{param$y
 
 
 ### CLEAN UP
-rm(grid, simu, simu_r, simu_global)
+rm(grid, simu, simu_area, simu_r, simu_global, temp_path)
 
 
 

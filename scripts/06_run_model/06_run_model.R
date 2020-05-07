@@ -31,7 +31,7 @@ run_spam(param)
 
 
 ############### PREPARE RESULTS ###############
-prepare_results(param)
+harvest_results(param)
 
 
 ############### PREPARE RESULTS ###############

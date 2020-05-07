@@ -5,24 +5,8 @@
 #' Contact:  michiel.vandijk@wur.nl
 #'========================================================================================================================================
 
-############### SET UP ###############
-# Load pacman for p_load
-if(!require(pacman)){
-  install.packages("pacman")
-  library(pacman) 
-} else {
-  library(pacman)
-}
-
-# Load key packages
-p_load("tidyverse", "readxl", "stringr", "here", "scales", "glue")
-
-# Set root
-root <- here()
-
-# R options
-options(scipen=999) # Supress scientific notation
-options(digits=4) # limit display to four digits
+############### SOURCE PARAMETERS ###############
+source(here::here("scripts/01_model_setup/01_model_setup.r"))
 
 
 ############### LOAD DATA ###############
@@ -30,18 +14,18 @@ options(digits=4) # limit display to four digits
 aquastat_version <- "20200303"
 
 # Aquastat raw
-aquastat_raw <- read_excel(file.path(glob_raw_path, glue("aquastat/{aquastat_version}_aquastat_irrigation.xlsx")), sheet = "data")
+aquastat_raw <- read_excel(file.path(param$raw_path, glue("aquastat/{aquastat_version}_aquastat_irrigation.xlsx")), sheet = "data")
 
 # Crop mapping
-aquastat2crop <-  read_excel(file.path(mappings_path, "mappings_spam.xlsx"), sheet = "aquastat2crop")
+aquastat2crop <-  read_csv(file.path(param$spam_path, "mappings/aquastat2crop.csv"))
 
 
 ############### PROCESS ###############
 # Clean up database
 aquastat <- aquastat_raw %>%
-  filter(`Area Id` == fao_sel) %>%
-  mutate(adm_code = iso3c_sel,
-         adm_name = country_sel,
+  filter(`Area Id` == param$fao) %>%
+  mutate(adm_code = param$iso3c,
+         adm_name = param$country,
          adm_level = 0) %>%
   transmute(adm_name, adm_code, adm_level, variable = `Variable Name`, variable_code = `Variable Id`, year = Year, value = Value)
 
@@ -88,7 +72,8 @@ ir_area <- ir_area %>%
 
 
 ############### SAVE ###############
-write_csv(ir_area, file.path(proc_path, glue("agricultural_statistics/aquastat_irrigated_crops_{year_sel}_{iso3c_sel}.csv")))
+write_csv(ir_area, file.path(param$spam_path, 
+  glue("processed_data/agricultural_statistics/aquastat_irrigated_crops_{param$year}_{param$iso3c}.csv")))
         
 
 ############### CLEAN UP ###############

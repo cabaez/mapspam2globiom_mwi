@@ -23,8 +23,6 @@ output <- file.path(param$spam_path,
                     glue("processed_data/maps/cropland/{param$res}/esa_raw_{param$year}_{param$iso3c}.tif"))
 
 # Warp and mask
-esa <- gdalwarp(cutline =input_shp, crop_to_cutline = T, srcfile = input, dstfile = output, verbose = T, output_Raster = T, overwrite = T)
-
 output_map <- gdalwarp(srcfile = input, dstfile = output,
                             cutline = mask, crop_to_cutline = T, srcnodata = "0",
                             r = "near", verbose = F, output_Raster = T, overwrite = T)
@@ -32,4 +30,4 @@ plot(output_map)
 
 
 ############### CLEAN UP ###############
-rm(input, mask, output, grid, output_map)
+rm(input, mask, output, output_map, temp_path)

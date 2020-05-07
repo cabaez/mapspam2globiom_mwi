@@ -10,12 +10,10 @@ source(here::here("scripts/01_model_setup/01_model_setup.r"))
 
 
 ########## LOAD DATA ##########
-load_data(c("adm_map", "grid"), param)
+load_data(c("adm_map", "grid", "gaez2crop"), param)
 
-
-# gaez2crop
 # As some gaez maps are not available (see Convert_GAEZ_too_Suit_v4.docx, we need a specific mapping).
-gaez2crop <- read_excel(file.path(param$spam_path, "parameters/mappings_spam.xlsx"), sheet = "gaez2crop") %>%
+gaez2crop <- gaez2crop %>%
   mutate(id = paste(crop, system, sep = "_"))
 
 
@@ -62,7 +60,7 @@ walk(lookup$id, clip_gaez, "bs", "biophysical_suitability")
 
 
 ############### CLEAN UP  ###############
-rm(files1, files2, lookup)
+rm(lookup)
 
 
 ########## CREATE 5 ARCMIN MAPS FROM RAW GAEZ FOR PRODUCTIONCAPACITY ##########
@@ -80,7 +78,6 @@ lookup <- bind_rows(
     dplyr::select(-ext)) %>%
   left_join(gaez2crop,., by = c("gaez_crop", "gaez_input", "gaez_system", "prod_variable"))  
 
-
 # warp and mask
 walk(lookup$id, clip_gaez, "py", "potential_yield")
 
@@ -88,5 +85,5 @@ walk(lookup$id, clip_gaez, "py", "potential_yield")
 ############### CLEAN UP  ###############
 rm(files1, files2, lookup)
 rm(adm_loc, gaez2crop, grid, mask)
-rm(clip_gaez)
+rm(clip_gaez, gaez2crop, lookup)
 

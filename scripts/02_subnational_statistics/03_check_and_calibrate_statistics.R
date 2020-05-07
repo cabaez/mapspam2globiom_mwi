@@ -64,7 +64,7 @@ check_statistics(ha_df, param, out = T)
 # Make sure the totals at higher levels are the same as subtotals
 # We start at the lowest level, assuming lower levels are preferred if more than one level
 # of data is available and data is complete.
-ha_df <- rebalance_statistics(ha_df, param)
+ha_df <- reaggregate_statistics(ha_df, param)
 
 # Check again
 check_statistics(ha_df, param, out = T)

@@ -21,8 +21,7 @@ lc_map <- raster(lc_file)
 plot(lc_map)
 
 # Load mapping of lc classes to globiom lc classes
-lc_class2globiom <- read_excel(file.path(param$spam_path, 
-                                     "parameters/mappings_spam.xlsx"), sheet = "esacci2globiom")
+lc_class2globiom <- read_csv(file.path(param$spam_path, "mappings/esacci2globiom.csv"))
 
 
 # Aggregate land cover map to GLOBIOM land cover classes at simu level

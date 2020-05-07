@@ -87,9 +87,8 @@ output_map <- align_rasters(unaligned = input, reference = grid, dstfile = outpu
 plot(output_map)
 
 # clean up
-rm(grid, input, mask, output, output_map)
+rm(grid, input, mask, output, output_map, temp_path)
 
 
-############### MESSAGE ###############
-message("Complete")
+
 

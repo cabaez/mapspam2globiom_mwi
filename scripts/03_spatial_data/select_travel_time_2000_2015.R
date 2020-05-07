@@ -37,4 +37,4 @@ plot(output_map)
 
 
 ############### CLEAN UP ###############
-rm(input, mask, output, grid, output_map)
+rm(input, mask, output, grid, output_map, temp_path)

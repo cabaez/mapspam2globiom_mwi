@@ -111,4 +111,7 @@ rasterize_adm_map(param)
 
 
 ############### CLEAN UP ###############
-
+rm(adm_map, adm_map_raw, iso3c_shp, temp_path)
+rm(list = ls()[grep("code_orig", ls())])
+rm(list = ls()[grep("name_orig", ls())])
+rm(list = ls()[grep("to_remove", ls())])

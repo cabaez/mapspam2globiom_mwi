@@ -1,5 +1,5 @@
 #'========================================================================================================================================
-#' Project:  mapspam
+#' Project:  globiom2mapspam
 #' Subject:  Script to process FAOSTAT price data
 #' Author:   Michiel van Dijk
 #' Contact:  michiel.vandijk@wur.nl
@@ -21,7 +21,8 @@ prod_raw <- read_csv(file.path(param$raw_path, glue("faostat/{faostat_crops_vers
 price_raw <- read_csv(file.path(param$raw_path, glue("faostat/{faostat_prices_version}_faostat_prices.csv")))
 
 # faostat2crop
-faostat2crop <- read_excel(file.path(param$spam_path, "parameters/mappings_spam.xlsx"), sheet = "faostat2crop") %>%
+load_data("faostat2crop", param)
+faostat2crop <- faostat2crop %>%
   dplyr::select(crop, faostat_crop_code) %>%
   na.omit()
 
@@ -80,5 +81,5 @@ write_csv(price_iso3c, file.path(param$spam_path,
 
 
 ########## CLEAN UP ##########
-rm(temp_path, area, crop_list, faostat2crop, miss_crop, price, price_iso3c, price_raw,
+rm(area, crop_list, faostat2crop, miss_crop, price, price_iso3c, price_raw,
    prod_raw, faostat_crops_version, faostat_prices_version)

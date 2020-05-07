@@ -17,7 +17,7 @@ if("pacman" %in% rownames(installed.packages()) == FALSE) install.packages("pacm
 library(pacman)
 
 # Load key packages
-p_load("mapspam2globiom", "here", "gdalUtils", "glue", "raster", "readxl", "tidyverse", "sf")
+p_load("mapspam2globiom", "countrycode", "gdalUtils", "here", "glue", "raster", "readxl", "tidyverse", "sf")
 
 # !diagnostics off
 # This switches off most warnings related to "Unknown or uninitialised column: ", which can be safely ignored.
@@ -47,3 +47,5 @@ print(param)
 # Create SPAMc folder structure in the spamc_path
 create_spam_folders(param)
 
+# clean up
+rm(spamc_path)

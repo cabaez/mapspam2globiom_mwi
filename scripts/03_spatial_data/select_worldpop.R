@@ -57,5 +57,5 @@ if(param$res == "5min") {
 
 
 ############### CLEAN UP ###############
-rm(grid, input, mask, output, output_map)
+rm(grid, input, mask, output, output_map, temp_path, worldpop_temp)
 
