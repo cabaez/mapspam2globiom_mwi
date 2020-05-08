@@ -1,6 +1,6 @@
 #'========================================================================================================================================
 #' Project:  mapspam
-#' Subject:  Script to create synergistic ir area map file that can be used in harmonization part
+#' Subject:  Script to combine and harmonize input data
 #' Author:   Michiel van Dijk
 #' Contact:  michiel.vandijk@wur.nl
 #'========================================================================================================================================
@@ -9,12 +9,27 @@
 source(here::here("scripts/01_model_setup/01_model_setup.r"))
 
 
-############### PREPARE BIOPHYSICAL SUITABILITY AND POTENTIAL YIELD ###############
-prepare_bs_yg("biophysical_suitability", param)
-prepare_bs_yg("potential_yield", param)
+############### PREPARE PHYSICAL AREA ###############
+prepare_physical_area(param)
+
+
+############### CREATE SYNERGY CROPLAND INPUT ###############
+prepare_cropland(param)
+
+
+############### PROCESS ###############
+prepare_irrigated_area(param)
+
+
+############### HARMONIZE INPUT DATA ###############
+harmonize_inputs(param)
 
 
 ############### PREPARE SCORE ###############
-prepare_score(param)
+prepare_scores(param)
+
+
+############### COMBINE MODEL INPUTS ###############
+combine_inputs(param)
 
 
