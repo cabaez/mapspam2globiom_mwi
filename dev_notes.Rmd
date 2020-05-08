@@ -70,15 +70,20 @@ Overlay of grid and acc shows that the extent is the same BUT actual selected ce
 - Add param$crs to gdalwarp of ESA so it is warped to the right projection in case the lc map uses a different crs.
 - make create_adm_map_pdf general so it can be used for any level of adms,
 - Add option in Github to provide comments.
+- CHange color of messages! : https://stackoverflow.com/questions/57030452/how-to-change-the-colour-of-the-printed-output-in-base-r
 
-TODO FABLE
+
+
+# TODO FABLE
 - COMMENT how country teams can create mapspam2globiom_iso3c github repository
+- Add coffee as example.
+- Explain how to add crop to GLOBIOM.
 - Add github repository
 - Add link to FABLE-GLOBIOM github.
 - add CI to crop gdx
 - Need to make crop2globiom a parameter when creating gdx file so thic an be adjusted if new crop is added in GLOBIOM!
 - Contact USA team as they are interested in creating Crop maps
-
+- 
 
 
 # To do
