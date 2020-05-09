@@ -72,6 +72,7 @@ Overlay of grid and acc shows that the extent is the same BUT actual selected ce
 - at the the moment cl and ia harm maps are saved in the adm subfolders. Better not to do this and create them expost from the merged database unless. But check if they are need as intermediate input.
 - Add option in Github to provide comments.
 - CHange color of messages! : https://stackoverflow.com/questions/57030452/how-to-change-the-colour-of-the-printed-output-in-base-r
+- check that replacement crops have to be %in% spam crop list of 40 (or more) loaded from mappings. 
 
 
 
