@@ -26,7 +26,7 @@ harmonize_inputs(param)
 
 
 ############### PREPARE SCORE ###############
-prepare_scores(param)
+prepare_priors_and_scores(param)
 
 
 ############### COMBINE MODEL INPUTS ###############
