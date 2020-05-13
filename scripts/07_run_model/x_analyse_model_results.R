@@ -26,12 +26,12 @@ options(digits=4) # limit display to four digits
 
 
 ############### LINK GAMS LIBRARIES ###############
-igdx(gams_path)
+igdx("")
 
 ############### LOAD DATA ###############
 ### MODEL OUTPUT
 # model output file
-output_file <- file.path(model_path, glue("output_{model_sel}_{grid_sel}_{year_sel}_{iso3c_sel}"))
+output_file <- file.path(param$spam_path, glue("model_debug/output_{param$res}_{param$year}_{param$iso3c}_{param$iso3c}"))
 
 # Allocation
 alloc <- rgdx.param(output_file, "palloc", names = c("gridID", "crop_system", "alloc"),  compress = T) %>%
@@ -52,14 +52,10 @@ adm_slack_raw <- rgdx.param(output_file, "adm_slack_l", names = c("adm_code", "c
 
 ### MODEL_INPUT
 # Adm
-adm <- readRDS(file.path(proc_path, glue("maps/adm/adm_{year_sel}_{iso3c_sel}.rds")))
+pa <- read_csv(file.path(param$spam_path, glue("processed_data/intermediate_output/MWI/{param$res}/pa_{param$year}_{param$iso3c}_{param$iso3c}.csv")))
 
-# Adm_r
-adm_r <- readRDS(file.path(proc_path, glue("maps/adm/adm_r_{grid_sel}_{year_sel}_{iso3c_sel}.rds"))) 
+load_data(c("adm_map_r", "grid"), param)
 
-# Grid
-grid <- raster(file.path(proc_path, glue("maps/grid/grid_{grid_sel}_r_{year_sel}_{iso3c_sel}.tif")))
-names(grid) <- "gridID"
 
 # Physical area
 pa_raw <- read_csv(file.path(proc_path, glue("harmonized/pa_{year_sel}_{iso3c_sel}.csv"))) 
@@ -91,8 +87,11 @@ db <- score_raw %>%
   left_join(cl_slack_raw) 
 summary(db)
 
+db <- alloc %>%
+  left_join(adm_map_r)
+
 # Put statistics in long format
-pa <- pa_raw %>%
+pa <- pa %>%
   gather(crop, pa, -adm_code, -adm_name, -adm_level)
 
 pa_fs <- pa_fs_raw %>%
@@ -215,6 +214,19 @@ comp_ir_adm2 <- pa %>%
 
 
 ############### CHECK ADM SLACK ###############
+# model output file
+output_file <- file.path(param$spam_path, glue("model_debug/output_{param$res}_{param$year}_{param$iso3c}_{param$iso3c}"))
+
+# Allocation
+alloc <- rgdx.param(output_file, "palloc", names = c("gridID", "crop_system", "alloc"),  compress = T) %>%
+  mutate(gridID = as.numeric(as.character(gridID))) %>%
+  separate(crop_system, into = c("crop", "system"), sep = "_", remove = F)
+
+
+db <- alloc %>%
+  left_join(adm_map_r)
+
+
 # Compare total adm with total allocation
 adm0_check <- pa %>%
   filter(adm_level == 0) %>%
@@ -228,7 +240,7 @@ all.equal(adm0_check$pa, adm0_check$alloc)
 adm1_check <- pa %>%
   filter(adm_level == 1) %>%
   dplyr::select(crop, adm1_code = adm_code, adm1_name = adm_name, pa) %>%
-  left_join(
+  full_join(
     db %>%
       group_by(crop, adm1_code, adm1_name) %>%
       summarize(alloc = sum(alloc, na.rm = T))) %>%
@@ -240,11 +252,11 @@ all.equal(adm1_check$pa, adm1_check$alloc)
 adm2_check <- pa %>%
   filter(adm_level == 2) %>%
   dplyr::select(crop, adm2_code = adm_code, adm2_name = adm_name, pa) %>%
-  left_join(
+  full_join(
     db %>%
       group_by(crop, adm2_code, adm2_name) %>%
       summarize(alloc = sum(alloc, na.rm = T))) %>%
-  drop_na() %>%
+  #drop_na() %>%
   mutate(dif = pa - alloc) %>%
   arrange(dif)
 all.equal(adm2_check$pa, adm2_check$alloc)
