@@ -9,10 +9,11 @@
 source(here::here("scripts/01_model_setup/01_model_setup.r"))
 
 
-############### RUN MODEL ###############
-run_spam(param)
+############### INSPECT RESULTS ###############
+view_panel("rice", var = "ha", param)
+view_stack("rice", var = "ha", param)
 
 
-############### COMBINE ADM1 RESULTS ###############
-combine_results(param)
+############### CREATE TIF ###############
+create_all_tif(param)
 

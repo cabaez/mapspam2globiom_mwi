@@ -75,6 +75,10 @@ Overlay of grid and acc shows that the extent is the same BUT actual selected ce
 - check that replacement crops have to be %in% spam crop list of 40 (or more) loaded from mappings. 
 - Prepare_priors_and scores checks if processed bs and py already exists. As creating priors and scores are combined now, this no longer seems necessary.
 - Need to add error checks for if somebody changes model_solve and then starts running any of the prep functions or model. This will result in an error because intermediate data is not produced yet.
+- say somewhere that we take the average of 3 years when scaling to FAOSTAT.
+- add flowchart from presentation
+- add figure with folder tree
+- add table with all sources from paper
 
 
 
