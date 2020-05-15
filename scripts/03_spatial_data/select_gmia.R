@@ -31,8 +31,10 @@ if(!file.exists(file.path(param$raw_path, "gmia/gmia_v5_aei_ha_crs.tif"))){
 
 if(param$res == "5min") {
   # Set files
+  grid <- file.path(param$spam_path,
+                    glue("processed_data/maps/grid/{param$res}/grid_{param$res}_{param$year}_{param$iso3c}.tif"))
   mask <- file.path(param$spam_path,
-                    glue("processed_data/maps/adm/{param$res}/adm_map_wsg_84_{param$year}_{param$iso3c}.shp"))
+                    glue("processed_data/maps/adm/{param$res}/adm_map_{param$year}_{param$iso3c}.shp"))
   input <- file.path(param$raw_path,
                      glue("gmia/gmia_v5_aei_ha_crs.tif"))
   output <- file.path(param$spam_path,
@@ -42,39 +44,22 @@ if(param$res == "5min") {
   dir.create(temp_path, showWarnings = FALSE, recursive = TRUE)
   
   # Warp and mask
-  # Use crop to cutline to crop.
-  # TODO probably does not work at 30sec!!
-  gmia_temp <- gdalUtils::gdalwarp(srcfile = input, dstfile = output,
-                                  cutline = mask, crop_to_cutline = T, 
-                                  r = "bilinear", verbose = F, output_Raster = T, overwrite = T)
-  names(gmia_temp) <- "gmia"
-  
-  # Calculate share of irrigated area
-  gmia_temp <- gmia_temp/(area(gmia_temp)*100)
-  plot(gmia_temp)
-  
-  # save
-  writeRaster(gmia_temp, file.path(param$spam_path,
-                                   glue("processed_data/maps/irrigated_area/{param$res}/gmia_temp_{param$res}_{param$year}_{param$iso3c}.tif"))
-              ,
-  overwrite = T)
-
-  # Warp and mask to model resolution
-  # Set files
-  grid <- file.path(param$spam_path,
-                    glue("processed_data/maps/grid/{param$res}/grid_{param$res}_{param$year}_{param$iso3c}.tif"))
-  mask <- file.path(param$spam_path,
-                    glue("processed_data/maps/adm/{param$res}/adm_map_{param$year}_{param$iso3c}.shp"))
-  input <- file.path(param$spam_path,
-                     glue("processed_data/maps/irrigated_area/{param$res}/gmia_temp_{param$res}_{param$year}_{param$iso3c}.tif"))
-  output <- file.path(param$spam_path,
-                      glue("processed_data/maps/irrigated_area/{param$res}/gmia_{param$res}_{param$year}_{param$iso3c}.tif"))
-  
-  # Warp and mask
+  # use r = "near as we warp 5 arcmin to 5 arcmin. Using r = "bilinear" might result in different grid cell values
   output_map <- align_rasters(unaligned = input, reference = grid, dstfile = output,
                               cutline = mask, crop_to_cutline = F, 
-                              r = "bilinear", verbose = F, output_Raster = T, overwrite = T)
+                              r = "near", verbose = F, output_Raster = T, overwrite = T)
   plot(output_map)
+  
+  
+  # Calculate share of irrigated area
+  output_map <- output_map/(area(output_map)*100)
+  plot(output_map)
+  
+  # save
+  writeRaster(output_map, file.path(param$spam_path,
+                                   glue("processed_data/maps/irrigated_area/{param$res}/gmia_{param$res}_{param$year}_{param$iso3c}.tif"))
+              ,
+  overwrite = T)
   }
 
 if(param$res == "30sec") {

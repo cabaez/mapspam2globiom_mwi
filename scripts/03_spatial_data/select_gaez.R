@@ -43,7 +43,7 @@ mask <- file.path(param$spam_path,
 
 # Function to loop over gaez files, warp and mask
 clip_gaez <- function(id, var, folder){
-  print(id)
+  cat("\n", id)
   temp_path <- file.path(param$spam_path, glue("processed_data/maps/{folder}/{param$res}"))
   dir.create(temp_path, showWarnings = FALSE, recursive = TRUE)
   input <- lookup$files_full[lookup$id == id]
