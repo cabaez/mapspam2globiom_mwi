@@ -1,5 +1,5 @@
 #'========================================================================================================================================
-#' Project:  crop_map
+#' Project:  mapspam2globiom
 #' Subject:  Code to select gl30 land cover map per country
 #' Author:   Michiel van Dijk
 #' Contact:  michiel.vandijk@wur.nl
