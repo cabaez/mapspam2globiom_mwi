@@ -39,7 +39,7 @@ param <- spam_par(spam_path = spamc_path,
                          res = "5min",
                          adm_level = 2,
                          solve_level = 1,
-                         model = "min_entropy")
+                         model = "max_score")
 
 # Show parameters
 print(param)
