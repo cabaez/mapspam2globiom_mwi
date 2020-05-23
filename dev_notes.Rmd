@@ -79,6 +79,7 @@ Overlay of grid and acc shows that the extent is the same BUT actual selected ce
 - add flowchart from presentation
 - add figure with folder tree
 - add table with all sources from paper
+- better way to use stopifnot: https://www.r-bloggers.com/mining-r-4-0-0-changelog-for-nuggets-of-gold-1-stopifnot/
 
 
 
