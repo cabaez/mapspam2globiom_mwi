@@ -8,14 +8,15 @@ output: html_document
 KEY!!
 Overlay of grid and acc shows that the extent is the same BUT actual selected cells are different on the edges (5 arcmin grid)!!! This means that allign rasters in combination with cutline does not select the same cells> Probably easiest solution is to use gdal to create the raster....perhaps create (1) create raster of ALL cellS touched by polygon and then run gdal...
 
-- need to illustrate the case when no subnational statistics are available. 
+- need to illustrate the case when no subnational statistics are available => GAMBIA. 
 
 
 # Finish documentation and functions
+- We only describe cropping intensity and farming systems data in the subnational statistics section. This is inconsistent as one still needs this data if the model is run at adm0 only (e.g. Gambia). Need to add these to the national statistics section on collecting data and have an additional section on how to process/prepate them (now in process subnational statistics).
 - load_data and add functions that load the data instead of repeating code.
 - make create_adm_template more general by looping over adm levels
-
-
+- Finish process_subnat_stat.rmd
+- If adm_level = 0, pdf of maps is empty => add adm0 map.
 - Check why there is an indication of ir slack when harmonizing at adm1_level in MWI.
 - Check: with present data adm_art_map has art_adms that are approximately zero. This should not happen if the rebalancing would be succesful. Added code to remove them in combine model input to remove them!
 - check where to store all the mappings files. On the one hand we should store the in the package on the other hand we should provide a way to update them.
