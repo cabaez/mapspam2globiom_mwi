@@ -25,11 +25,11 @@ sy_ci_raw <- read_csv(file.path(param$raw_path, paste0("subnational_statistics/d
 link_raw <- read_csv(file.path(param$raw_path, paste0("subnational_statistics/linktable_all.csv")), na = c("-999", ""))
 
 
-########## PREPARARE STAT ########## In the case of Malawi we are using raw data
-#from SPAM2010 (https://www.mapspam.info) as source. Hence there was no need to
-#collect data and aggregate crops. Alternatively we could have started with a
-#template file and use R or Excel to aggregate/split the raw statistics so they
-#fit in the template.
+########## PREPARARE STAT ##########
+# In the case of Malawi we are using raw data from SPAM2010 (https://www.mapspam.info)
+# as source. Hence there was no need to collect data and aggregate crops. 
+# Alternatively we could have started with a template file and use R or Excel to
+# aggregate/split the raw statistics so they fit in the template.
 
 # To create the templates use the following commands
 ha_template <- create_statistics_template("ha", param)
