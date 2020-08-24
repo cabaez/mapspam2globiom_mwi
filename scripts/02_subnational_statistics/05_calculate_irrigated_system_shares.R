@@ -25,12 +25,6 @@ aquastat_raw <- read_csv(file.path(param$spam_path,
 
 ########## PROCESS ##########
 # Prepare stat
-ha <- ha %>%
-  gather(crop, value_ha, -adm_name, -adm_code, -adm_level) %>%
-  mutate(value_ha = as.numeric(value_ha),
-         value_ha = if_else(value_ha == -999, NA_real_, value_ha),
-         adm_code = as.character(adm_code))
-
 aquastat <- aquastat_raw %>%
   filter(crop != "total", 
          variable %in% c("Harvested irrigated permanent crop area", "Harvested irrigated temporary crop area")) %>%
