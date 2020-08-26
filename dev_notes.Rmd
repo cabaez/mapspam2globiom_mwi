@@ -13,6 +13,7 @@ Overlay of grid and acc shows that the extent is the same BUT actual selected ce
 
 # Finish documentation and functions
 - We only describe cropping intensity and farming systems data in the subnational statistics section. This is inconsistent as one still needs this data if the model is run at adm0 only (e.g. Gambia). Need to add these to the national statistics section on collecting data and have an additional section on how to process/prepate them (now in process subnational statistics).
+- The same inconsistency exists when creating data for countries for which no adm 1 or 2 data is available. Where should raw CI and FS data be stored? In the subnational statistics folder? Same when alternative adm0 crop data is used instead of FAO. Should this be stored in the subnational statistics folder? maybe better to rename: country_ or national_statistics, or simply crop_statistics?
 - load_data and add functions that load the data instead of repeating code.
 - make create_adm_template more general by looping over adm levels
 - Finish process_subnat_stat.rmd
@@ -112,6 +113,7 @@ Check what happens when
 - puts wide pa, ci, fs to long
 - Replace gather by pivot_long
 - Functions to create stat object
+- Use logger package to create a log! https://cran.r-project.org/web/packages/logger/index.html
 
 # Process raw subnational statistics file.
 
