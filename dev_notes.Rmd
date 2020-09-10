@@ -103,6 +103,7 @@ remove cl maps and df in harmonization file when they are redundant to save memo
 Create separated functions to calculate priors for each system so they can be easily adjusted.
 Check this part on using .data$x to make sure data is in the local environment: https://cran.r-project.org/web/packages/dplyr/vignettes/programming.html
 Check what happens when 
+CHECK: SPAM uses additional constraint on artificial adms, for which no slack is allowed. Not applied at the moment    
 
 # To do for running over adm.
 - prep_gaez is prepared for all gridID cells. This will become very large for large countries and at 30 arcsec. It should be (1) split over ADMs. and (2) probably only create it for the relevant gridIDs that for which the landcover data is generated in the harmonization process.
