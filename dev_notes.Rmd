@@ -157,3 +157,7 @@ Perhaps also create function that loads data as there is a lot of repetition.
 
 Similarly there is a need to make the other paths variable. At the moment, load spatial has a hard coded folder, this should become a variable so it is taken from the param.
 Maybe better to add these to the parameters file
+
+
+# Check script
+In MOZ lc appeared to be negative in GDX file, giving error that log <0. Need to create a check file that also checks if all inputs are positive. Add to GAMS code as well like in original scripts
