@@ -14,7 +14,7 @@ source(here::here("scripts/01_model_setup/01_model_setup.r"))
 iso3c_shp <- "adm_2010_MWI.shp"
 
 # load shapefile
-adm_map_raw <- read_sf(file.path(param$spam_path, glue("raw_data/adm/{iso3c_shp}")))
+adm_map_raw <- read_sf(file.path(param$raw_path, glue("adm/{iso3c_shp}")))
 
 # plot
 plot(adm_map_raw$geometry)
@@ -30,7 +30,7 @@ head(adm_map)
 names(adm_map)
 
 # Change names In order to use the country polygon as input, the column names of
-# the attribute table have to be set. 
+# the attribute table have to be set.
 # The names of the administrative units should be set to admX_name, where X is the adm level.
 # The codes of the administrative units should be set to admX_code, where X is the adm code.
 
@@ -59,7 +59,7 @@ adm_map <- adm_map %>%
 head(adm_map)
 names(adm_map)
 
-# Union separate polygons that belong to the same adm    
+# Union separate polygons that belong to the same adm
 adm_map <- adm_map %>%
   group_by(adm0_name, adm0_code, adm1_name, adm1_code, adm2_name, adm2_code) %>%
   summarize() %>%
@@ -70,8 +70,8 @@ adm_map <- adm_map %>%
 par(mfrow=c(1,2))
 plot(adm_map$geometry, main = "ADM all polygons")
 
-# Set names of ADMs that need to be removed from the polygon. 
-# These are ADMs where no crop should be allocated. Here we remove 
+# Set names of ADMs that need to be removed from the polygon.
+# These are ADMs where no crop should be allocated. Here we remove
 # Area under National Administration, which is the part of Lake Malawi that belongs to Malawi
 # and Likoma, several small islands in the lake that are not covered by the statistics.
 # Set the adm_name by ADM level which need to be removed. Otherwise remove the script.
@@ -87,7 +87,7 @@ plot(adm_map$geometry, main = "ADM polygons removed")
 par(mfrow=c(1,1))
 
 # Create adm_list
-create_adm_list(adm_map, param)  
+create_adm_list(adm_map, param)
 
 
 ############### SAVE ###############

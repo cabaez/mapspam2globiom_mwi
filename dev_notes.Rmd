@@ -16,7 +16,11 @@ Overlay of grid and acc shows that the extent is the same BUT actual selected ce
 - load_data and add functions that load the data instead of repeating code.
 - make create_adm_template more general by looping over adm levels
 
-
+- view_stack does not work for GMB due to an extend problem, which for some reason is not fully harmonized.
+- NB Create irrigation map: extend should be the same. See GMB for fix
+- NB lines 100-116 calibrate statistics.r refers to fips and adm, which should be adm_code and adm_name. See GMB for fix
+- NB When score is created and no substitute maps are available an error is produced. Need to make the error explicit by sending the message that a subsiture map is not specified (see oilp GMB for example)
+- NB need to add comment that adm_code nees to be a character string as otherwise bind_rows with adm0 (iso code) will not work! Or develope code that adm_code is always set as character when read in from the csv file. This might be cumbersome as sometimes we have adm1 and sometimes adm2 also...
 - Check why there is an indication of ir slack when harmonizing at adm1_level in MWI.
 - Check: with present data adm_art_map has art_adms that are approximately zero. This should not happen if the rebalancing would be succesful. Added code to remove them in combine model input to remove them!
 - check where to store all the mappings files. On the one hand we should store the in the package on the other hand we should provide a way to update them.
