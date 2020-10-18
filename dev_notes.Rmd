@@ -21,6 +21,10 @@ Overlay of grid and acc shows that the extent is the same BUT actual selected ce
 - NB lines 100-116 calibrate statistics.r refers to fips and adm, which should be adm_code and adm_name. See GMB for fix
 - NB When score is created and no substitute maps are available an error is produced. Need to make the error explicit by sending the message that a subsiture map is not specified (see oilp GMB for example)
 - NB need to add comment that adm_code nees to be a character string as otherwise bind_rows with adm0 (iso code) will not work! Or develope code that adm_code is always set as character when read in from the csv file. This might be cumbersome as sometimes we have adm1 and sometimes adm2 also...
+
+
+- IF there are still NAs at the top level, when running at sol_level1, there will be an error in harmonize_inputs(param) as the cl_df file will be empty. Need to add a stop with message if this occurs. Also add this as a check in the check_ha_pa function that I need to write/improve.
+
 - Check why there is an indication of ir slack when harmonizing at adm1_level in MWI.
 - Check: with present data adm_art_map has art_adms that are approximately zero. This should not happen if the rebalancing would be succesful. Added code to remove them in combine model input to remove them!
 - check where to store all the mappings files. On the one hand we should store the in the package on the other hand we should provide a way to update them.
