@@ -36,9 +36,9 @@ spamc_path <- "C:/Users/dijk158/Dropbox/mapspam2globiom_mwi"
 param <- spam_par(spam_path = spamc_path,
                          iso3c = "MWI",
                          year = 2010,
-                         res = "30sec",
+                         res = "5min",
                          adm_level = 2,
-                         solve_level = 1,
+                         solve_level = 0,
                          model = "min_entropy")
 
 # Show parameters
